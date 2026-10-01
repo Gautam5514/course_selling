@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# helloS
+
+helloS is a course discovery and learning platform focused on practical, career-oriented programs. The site brings together course tracks in full-stack development, AI and data science, UI/UX design, and cloud and DevOps.
+
+The project is built with the Next.js App Router and presents course catalogs, track details, pricing, and supporting company content in one responsive web experience.
+
+## Features
+
+- Course catalog with categories, featured courses, and detailed career tracks
+- Dedicated pages for the company, pricing, careers, and blog
+- Privacy, refund, and terms pages
+- Shared navigation, footer, and reusable page components
+- Local course and landing-page content managed in JavaScript data files
+
+## Tech Stack
+
+- [Next.js 16](https://nextjs.org/) with the App Router
+- [React 19](https://react.dev/)
+- [Tailwind CSS 4](https://tailwindcss.com/)
+- [Lucide React](https://lucide.dev/) for icons
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 20.9 or newer
+- npm
+
+### Install and run
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the app. The development server reloads as you edit files.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Available Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the local development server |
+| `npm run lint` | Run ESLint |
+| `npm run build` | Create a production build |
+| `npm run start` | Serve the production build locally |
 
-## Learn More
+## Pages
 
-To learn more about Next.js, take a look at the following resources:
+| Route | Page |
+| --- | --- |
+| `/` | Home |
+| `/courses` | Course catalog |
+| `/courses/[slug]` | Career track details |
+| `/about` | About helloS |
+| `/pricing` | Plans and pricing |
+| `/career` | Careers |
+| `/blog` | Blog |
+| `/privacy` and `/privacy-policy` | Privacy policy |
+| `/refunds` and `/refund-policy` | Refund policy |
+| `/terms` and `/terms-and-conditions` | Terms and conditions |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```text
+app/          Routes, layouts, and global styles
+components/   Shared UI and page-specific components
+data/         Course tracks and landing-page content
+public/       Static assets, including images and icons
+```
 
-## Deploy on Vercel
+## Quality Checks
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Run linting and a production build before shipping changes:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run lint
+npm run build
+```
+
+## Deployment
+
+The app can be deployed to any platform that supports Next.js. For Vercel, connect the repository and use the default Next.js build settings. For other platforms, see the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying).

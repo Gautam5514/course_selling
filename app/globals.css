@@ -1,26 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Doppio+One&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Satisfy&family=Slabo+13px&family=Smooch+Sans:wght@100..900&family=Syne:wght@400..800&display=swap');
 @import "tailwindcss";
 
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #faf7f2;
+  --foreground: #0f2820;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: "Plus Jakarta Sans", "Bricolage Grotesque", "Nunito", "Josefin Sans", system-ui, -apple-system, sans-serif;
+  --font-heading: "Bricolage Grotesque", "Syne", "Plus Jakarta Sans", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
+html, body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Plus Jakarta Sans", "Nunito", "Lato", system-ui, -apple-system, sans-serif;
+}
+
+/* Headings use the bold, punchy Bricolage Grotesque / Syne */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Bricolage Grotesque", "Syne", "Plus Jakarta Sans", sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Utility font classes for the imported font collection */
+.font-bricolage {
+  font-family: "Bricolage Grotesque", sans-serif;
+}
+
+.font-syne {
+  font-family: "Syne", sans-serif;
+}
+
+.font-jakarta {
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.font-josefin {
+  font-family: "Josefin Sans", sans-serif;
+}
+
+.font-nunito {
+  font-family: "Nunito", sans-serif;
+}
+
+.font-lato {
+  font-family: "Lato", sans-serif;
+}
+
+.font-satisfy {
+  font-family: "Satisfy", cursive;
+}
+
+.font-smooch {
+  font-family: "Smooch Sans", sans-serif;
+}
+
+.font-doppio {
+  font-family: "Doppio One", sans-serif;
+}
+
+.font-slabo {
+  font-family: "Slabo 13px", serif;
+}
+
+.font-bitcount {
+  font-family: "Bitcount Grid Double", monospace;
+}
+
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #faf7f2;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #0c3d32;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #eb793e;
 }
