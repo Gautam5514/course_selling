@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { SparkleStar, DoodleUnderline } from "@/components/DecorativeShapes";
+import { FileText, Code2, Heart, CheckCircle } from "lucide-react";
 
-export default function PricingHero({ isAnnual, setIsAnnual }) {
+export default function PricingHero() {
   return (
     <section className="relative bg-[#0b382d] pt-14 pb-20 sm:pb-24 text-white overflow-hidden">
       {/* Background Grid Pattern */}
@@ -23,16 +25,16 @@ export default function PricingHero({ isAnnual, setIsAnnual }) {
         {/* Pill Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-700/40 text-xs sm:text-sm text-emerald-200 backdrop-blur-md mb-6">
           <span className="w-2 h-2 rounded-full bg-[#f3843f]" />
-          <span>Simple, Honest Pricing</span>
+          <span>Our Open-Access Pledge</span>
         </div>
 
         {/* Heading */}
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white leading-[1.15] max-w-4xl">
-          Invest in Your Career with
+          Zero Paywalls. Zero Fees.
           <br />
-          Flexible{" "}
+          100% Free{" "}
           <span className="relative inline-block">
-            <span>Plans!</span>
+            <span>PDFs &amp; Projects!</span>
             <span className="absolute -bottom-3 left-0 w-full pointer-events-none">
               <DoodleUnderline className="w-full h-3 text-[#f3843f]" />
             </span>
@@ -40,35 +42,43 @@ export default function PricingHero({ isAnnual, setIsAnnual }) {
         </h1>
 
         {/* Subtitle */}
-        <p className="mt-7 text-base sm:text-lg text-emerald-100/75 max-w-2xl leading-relaxed">
-          Zero hidden fees. Lifetime access to completed courses, live virtual classrooms, and 1-on-1 career mentorship.
+        <p className="mt-7 text-base sm:text-lg text-emerald-100/85 max-w-2xl leading-relaxed">
+          We don’t believe in charging hundreds of dollars for disconnected video tutorials.
+          Our niche is simple: comprehensive technical PDF notes and production-ready GitHub projects with live demos. Free forever.
         </p>
 
-        {/* Annual / Monthly Toggle */}
-        <div className="mt-10 flex items-center gap-3 bg-emerald-950/70 border border-emerald-800/60 p-1.5 rounded-full backdrop-blur-sm">
-          <button
-            onClick={() => setIsAnnual(false)}
-            className={`px-5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all ${
-              !isAnnual
-                ? "bg-white text-[#0b382d] shadow-sm"
-                : "text-emerald-200 hover:text-white"
-            }`}
+        {/* Quick CTA Buttons */}
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
+          <Link
+            href="/pdf-notes"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold bg-white text-[#0b382d] hover:bg-emerald-50 shadow-md transition-all"
           >
-            Monthly Billing
-          </button>
-          <button
-            onClick={() => setIsAnnual(true)}
-            className={`px-5 py-2 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all ${
-              isAnnual
-                ? "bg-white text-[#0b382d] shadow-sm"
-                : "text-emerald-200 hover:text-white"
-            }`}
+            <FileText className="w-4 h-4 text-[#ea8a42]" />
+            <span>Browse Free PDF Notes</span>
+          </Link>
+          <Link
+            href="/projects"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold bg-[#eb793e] hover:bg-[#da6c32] text-white shadow-md transition-all"
           >
-            <span>Annual Billing</span>
-            <span className="bg-[#f3843f] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-              Save 25%
-            </span>
-          </button>
+            <Code2 className="w-4 h-4" />
+            <span>Explore Projects Hub</span>
+          </Link>
+        </div>
+
+        {/* Guarantees row */}
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-emerald-200/80">
+          <div className="flex items-center gap-1.5">
+            <CheckCircle className="w-4 h-4 text-[#f3843f]" />
+            <span>No Credit Card Required</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <CheckCircle className="w-4 h-4 text-[#f3843f]" />
+            <span>Direct 1-Click PDF Downloads</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <CheckCircle className="w-4 h-4 text-[#f3843f]" />
+            <span>Open Source GitHub Repositories</span>
+          </div>
         </div>
       </div>
     </section>

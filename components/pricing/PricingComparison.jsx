@@ -4,16 +4,54 @@ import { Check, Minus } from "lucide-react";
 
 export default function PricingComparison() {
   const rows = [
-    { feature: "Access to Free Courses", starter: true, pro: true, career: true },
-    { feature: "Unlimited Masterclasses (500+)", starter: false, pro: true, career: true },
-    { feature: "Weekly Live Virtual Classrooms", starter: false, pro: true, career: true },
-    { feature: "Downloadable Project Assets & Code", starter: false, pro: true, career: true },
-    { feature: "Verifiable Digital Certificate", starter: false, pro: true, career: true },
-    { feature: "Personal Code Reviews by Mentors", starter: false, pro: true, career: true },
-    { feature: "Dedicated 1-on-1 Career Coach", starter: false, pro: false, career: true },
-    { feature: "Resume & Portfolio Direct Overhaul", starter: false, pro: false, career: true },
-    { feature: "Mock Interviews with Senior Leads", starter: false, pro: false, career: true },
-    { feature: "Direct Referral to Hiring Partners", starter: false, pro: false, career: true },
+    {
+      feature: "100% Free Access (No Credit Card)",
+      bootcamps: false,
+      subscription: false,
+      hellos: true,
+    },
+    {
+      feature: "Downloadable Technical PDF Handbooks",
+      bootcamps: false,
+      subscription: true,
+      hellos: true,
+    },
+    {
+      feature: "Complete Production GitHub Repositories",
+      bootcamps: true,
+      subscription: false,
+      hellos: true,
+    },
+    {
+      feature: "Live Interactive Demos & Deployments",
+      bootcamps: false,
+      subscription: false,
+      hellos: true,
+    },
+    {
+      feature: "Modern 2025/2026 Tech (Next.js 16, React 19, LangGraph)",
+      bootcamps: false,
+      subscription: true,
+      hellos: true,
+    },
+    {
+      feature: "Permissive Open License for Personal Portfolio",
+      bootcamps: true,
+      subscription: false,
+      hellos: true,
+    },
+    {
+      feature: "Developer Community Like & Bookmark System",
+      bootcamps: false,
+      subscription: false,
+      hellos: true,
+    },
+    {
+      feature: "Zero Lock-in, No Hidden Fees, No Paywalls",
+      bootcamps: false,
+      subscription: false,
+      hellos: true,
+    },
   ];
 
   return (
@@ -21,13 +59,13 @@ export default function PricingComparison() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#093c33]/10 text-xs font-semibold text-[#093c33] mb-3">
-            Feature Breakdown
+            Open Comparison
           </div>
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#111827]">
-            Compare Plan Features
+            Why helloS Is Free &amp; Different
           </h2>
           <p className="mt-3 text-sm text-stone-600">
-            Everything you get in each tier, transparently broken down.
+            See how our free PDF and project-first niche compares to traditional paid models.
           </p>
         </div>
 
@@ -38,16 +76,16 @@ export default function PricingComparison() {
               <thead>
                 <tr className="bg-[#fcf8f2] border-b border-stone-200">
                   <th className="py-5 px-6 text-sm font-bold text-stone-900 w-2/5">
-                    Plan Feature
+                    Platform Capability
                   </th>
-                  <th className="py-5 px-4 text-center text-sm font-bold text-stone-800 w-1/5">
-                    Starter
+                  <th className="py-5 px-4 text-center text-sm font-bold text-stone-600 w-1/5">
+                    Bootcamps ($15k+)
                   </th>
-                  <th className="py-5 px-4 text-center text-sm font-bold text-[#f3843f] w-1/5 bg-[#f3843f]/10">
-                    Pro Learner
+                  <th className="py-5 px-4 text-center text-sm font-bold text-stone-600 w-1/5">
+                    Course Subs ($39/mo)
                   </th>
-                  <th className="py-5 px-4 text-center text-sm font-bold text-[#093c33] w-1/5">
-                    Accelerator
+                  <th className="py-5 px-4 text-center text-sm font-bold text-[#093c33] w-1/5 bg-emerald-50">
+                    helloS ($0 Free)
                   </th>
                 </tr>
               </thead>
@@ -58,22 +96,22 @@ export default function PricingComparison() {
                       {row.feature}
                     </td>
                     <td className="py-4 px-4 text-center">
-                      {row.starter ? (
-                        <Check className="w-4 h-4 text-emerald-600 mx-auto stroke-[2.5]" />
-                      ) : (
-                        <Minus className="w-4 h-4 text-stone-300 mx-auto" />
-                      )}
-                    </td>
-                    <td className="py-4 px-4 text-center bg-[#f3843f]/5">
-                      {row.pro ? (
-                        <Check className="w-4 h-4 text-[#f3843f] mx-auto stroke-[2.5]" />
+                      {row.bootcamps ? (
+                        <Check className="w-4 h-4 text-emerald-600 mx-auto" />
                       ) : (
                         <Minus className="w-4 h-4 text-stone-300 mx-auto" />
                       )}
                     </td>
                     <td className="py-4 px-4 text-center">
-                      {row.career ? (
-                        <Check className="w-4 h-4 text-[#093c33] mx-auto stroke-[2.5]" />
+                      {row.subscription ? (
+                        <Check className="w-4 h-4 text-emerald-600 mx-auto" />
+                      ) : (
+                        <Minus className="w-4 h-4 text-stone-300 mx-auto" />
+                      )}
+                    </td>
+                    <td className="py-4 px-4 text-center bg-emerald-50/60">
+                      {row.hellos ? (
+                        <Check className="w-5 h-5 text-emerald-600 font-bold mx-auto" />
                       ) : (
                         <Minus className="w-4 h-4 text-stone-300 mx-auto" />
                       )}

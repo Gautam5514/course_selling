@@ -3,9 +3,9 @@ import Footer from "@/components/Footer";
 import RefundContent from "@/components/legal/RefundContent";
 
 export const metadata = {
-  title: "30-Day Money-Back Guarantee & Refund Policy — hellobject.com",
+  title: "100% Free Open Policy — helloS | No Fees, No Charges",
   description:
-    "Details on our 100% risk-free 30-day money-back guarantee, refund request process, and cancellation guidelines at hellobject.com.",
+    "helloS is an open-access platform offering 100% free technical PDF notes and open-source projects without subscriptions or fees.",
 };
 
 export default function RefundsPage() {

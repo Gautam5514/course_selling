@@ -8,28 +8,28 @@ export default function CoursesFaqSection() {
 
   const faqs = [
     {
-      q: "Do I get lifetime access to the courses and future updates?",
-      a: "Yes! When you enroll in any helloS course or track, you get permanent, unrestricted lifetime access to all video lessons, code repositories, assignments, and future curriculum updates at no additional cost.",
+      q: "Is helloS really 100% free with no hidden charges or subscriptions?",
+      a: "Yes! helloS is entirely free. All PDF handbooks, architectural cheatsheets, study notes, and GitHub project repositories are open and accessible to all developers without fees, paywalls, or credit cards.",
     },
     {
-      q: "What if I miss a live cohort session or code review?",
-      a: "All live cohort sessions and mentor code reviews are recorded in HD and published to your student dashboard within 2 hours with timestamped transcripts, lecture notes, and linked GitHub commits.",
+      q: "Can I download the technical PDF notes and study offline?",
+      a: "Absolutely. Every track and module provides comprehensive multi-page PDF guides, architecture diagrams, and concept summaries that you can download with 1 click or read online in your browser.",
     },
     {
-      q: "How do 1-on-1 code reviews and mentorship work?",
-      a: "Every week, you can submit your GitHub repository or Figma file. Senior staff engineers and mentors review your pull requests, annotate your code, and provide detailed video teardowns on architecture, performance, and best practices.",
+      q: "Are the projects real-world production codebases?",
+      a: "Yes! Every capstone project includes complete open-source code on GitHub, pre-seeded database migrations, live deployment demo links, and modular deliverables mirroring real enterprise software standards.",
     },
     {
-      q: "Is there a refund policy if the course is not for me?",
-      a: "Yes, we offer an unconditional 30-day money-back guarantee. If you are not 100% satisfied with the course for any reason, email us at support@hellobject.com for a full, immediate refund.",
+      q: "Can I use the project source code in my personal portfolio?",
+      a: "Yes. You have full permission to fork, customize, build upon, and showcase these applications in your GitHub portfolio and resumes to impress tech recruiters and hiring teams.",
     },
     {
-      q: "Are the certificates accredited and shareable on LinkedIn?",
-      a: "Yes. Upon completing your capstone project and code reviews, you receive a cryptographically verified digital certificate with a unique verification URL that can be embedded on LinkedIn, GitHub, and resumes.",
+      q: "How does the 'Like' and bookmark system work?",
+      a: "You can click the heart Like button on any project or PDF note to save it to your local browser favorites and help the community discover the highest-quality developer resources.",
     },
     {
-      q: "Can my company or employer reimburse my tuition?",
-      a: "Most tech companies offer annual learning and development budgets. We provide automated formal itemized invoices with VAT / GST details, syllabus PDFs, and completion verification for employer reimbursement.",
+      q: "Are new PDF notes and project templates added regularly?",
+      a: "Yes! We continually add and update handbooks for the latest frameworks (Next.js 16, React 19, LangGraph, Terraform, Tailwind) and publish new capstone project starters.",
     },
   ];
 
@@ -39,13 +39,13 @@ export default function CoursesFaqSection() {
         <div className="text-center max-w-2xl mx-auto mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#f3843f]/10 text-xs font-bold text-[#f3843f] mb-3">
             <HelpCircle className="w-3.5 h-3.5" />
-            <span>GOT QUESTIONS?</span>
+            <span>COMMONLY ASKED QUESTIONS</span>
           </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-stone-900">
             Frequently Asked Questions
           </h2>
           <p className="text-xs sm:text-sm text-stone-600 mt-2">
-            Everything you need to know about our courses, cohorts, and certification.
+            Everything you need to know about our free PDF notes, open projects, and tracks.
           </p>
         </div>
 

@@ -6,47 +6,63 @@ import Link from "next/link";
 import {
   Star,
   Clock,
-  Award,
-  Users,
-  CheckCircle,
-  Calendar,
-  DollarSign,
-  ArrowRight,
-  ShieldCheck,
-  ChevronDown,
-  Sparkles,
-  BookOpen,
   Briefcase,
-  X,
+  CheckCircle,
+  ArrowRight,
+  ChevronDown,
   Code2,
+  Calendar,
+  Sparkles,
+  FileText,
+  ExternalLink,
+  GitBranch,
 } from "lucide-react";
-import {
-  RightEdgeConcentricRings,
-  SparkleStar,
-  RayBurstDoodle,
-  DoodleUnderline,
-} from "@/components/DecorativeShapes";
+import { popularTracksList } from "@/data/tracksData";
+import { pdfNotesList } from "@/data/pdfNotesData";
+import { projectsList } from "@/data/projectsData";
+import LikeButton from "@/components/LikeButton";
+import PdfPreviewModal from "@/components/PdfPreviewModal";
+import ProjectDetailModal from "@/components/ProjectDetailModal";
 
-export default function TrackDetailPageContent({ track, allTracks }) {
+export default function TrackDetailPageContent({ track }) {
   const [activeModuleIndex, setActiveModuleIndex] = useState(0);
-  const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
-  const [enrollSuccess, setEnrollSuccess] = useState(false);
+  const [selectedPdf, setSelectedPdf] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
 
-  const otherTracks = allTracks.filter((t) => t.slug !== track.slug);
+  // Other tracks excluding current
+  const otherTracks = popularTracksList.filter((t) => t.slug !== track.slug);
 
-  const handleEnrollConfirm = () => {
-    setEnrollSuccess(true);
-    setTimeout(() => {
-      setIsEnrollModalOpen(false);
-      setEnrollSuccess(false);
-    }, 2500);
+  const matchedPdf =
+    pdfNotesList.find((p) => p.id === track.pdfResource?.id) || pdfNotesList[0];
+
+  const handleOpenPdf = () => {
+    setSelectedPdf(matchedPdf);
+  };
+
+  const handleOpenProject = (proj) => {
+    const fullProject =
+      projectsList.find((p) => p.id === proj.id || p.slug === proj.id) || {
+        ...proj,
+        category: track.name,
+        level: track.level,
+        features: [
+          "Complete open-source architecture with Next.js & TypeScript",
+          "Production database schema with normalized migrations",
+          "Automated CI/CD with GitHub Actions",
+        ],
+        deliverables: [
+          "Full repository source code",
+          "Documentation & architecture guide",
+        ],
+      };
+    setSelectedProject(fullProject);
   };
 
   return (
-    <div className="bg-[#faf7f2] relative overflow-hidden">
-      {/* 1. HERO SECTION */}
-      <section className="relative bg-[#093c33] text-white pt-10 sm:pt-14 pb-20 sm:pb-28 overflow-hidden">
-        {/* Decorative Grid Pattern */}
+    <div>
+      {/* 1. TRACK HERO SECTION */}
+      <section className="relative bg-[#093c33] text-white pt-12 pb-20 sm:pt-16 sm:pb-28 overflow-hidden">
+        {/* Subtle grid pattern */}
         <div
           className="absolute inset-0 opacity-[0.06] pointer-events-none"
           style={{
@@ -55,154 +71,149 @@ export default function TrackDetailPageContent({ track, allTracks }) {
           }}
         />
 
-        {/* Decorative Concentric Rings Top-Right */}
-        <div className="absolute top-12 sm:top-16 right-0 opacity-60 pointer-events-none hidden lg:block">
-          <RightEdgeConcentricRings className="w-28 h-52 sm:w-36 sm:h-64 text-[#ea8a42]" />
-        </div>
-
-        {/* Decorative Sparkle Star */}
-        <div className="absolute top-28 left-8 pointer-events-none opacity-80 hidden sm:block">
-          <SparkleStar className="w-8 h-8 text-[#df9d66]" />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          {/* Breadcrumb Navigation */}
-          <div className="flex items-center gap-2 text-xs sm:text-sm text-emerald-200/80 mb-6 sm:mb-8">
-            <Link href="/" className="hover:text-white transition-colors">
-              Home
-            </Link>
-            <span>/</span>
-            <Link href="/courses" className="hover:text-white transition-colors">
-              Tracks
-            </Link>
-            <span>/</span>
-            <span className="text-white font-semibold truncate max-w-xs">
-              {track.name}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
-            {/* Left Column: Hero Content */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            {/* Left Column: Track Info */}
             <div className="lg:col-span-7 space-y-6">
-              {/* Badge & Level */}
+              {/* Breadcrumb Navigation */}
+              <div className="flex items-center gap-2 text-xs text-emerald-200/80 font-medium">
+                <Link href="/" className="hover:text-white transition-colors">
+                  Home
+                </Link>
+                <span>/</span>
+                <Link href="/courses" className="hover:text-white transition-colors">
+                  Tracks
+                </Link>
+                <span>/</span>
+                <span className="text-white font-bold">{track.name}</span>
+              </div>
+
+              {/* Badges Row */}
               <div className="flex flex-wrap items-center gap-2.5">
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-bold ${track.badgeColor} shadow-sm`}
                 >
                   {track.badge}
                 </span>
-                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950/60 border border-emerald-700/50 text-emerald-200">
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-emerald-200 border border-emerald-400/20">
                   {track.level}
                 </span>
-                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-400/20 border border-amber-400/40 text-amber-300 flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-amber-300" />
-                  Cohort Starts {track.cohortStartDate}
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-200 border border-emerald-400/30">
+                  100% Free &amp; Open Access
                 </span>
+                <LikeButton
+                  id={`track_${track.slug}`}
+                  initialLikes={track.reviewsCount || 420}
+                  variant="badge"
+                />
               </div>
 
-              {/* Title with Doodle Underline */}
-              <div className="relative">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-bold tracking-tight text-white leading-[1.15]">
-                  {track.title}
-                </h1>
-                <div className="w-36 sm:w-48 mt-2">
-                  <DoodleUnderline className="w-full h-3 text-[#f3843f]" />
-                </div>
-              </div>
-
-              {/* Tagline */}
-              <p className="text-sm sm:text-base md:text-lg text-emerald-100/90 leading-relaxed font-normal">
+              {/* Title & Tagline */}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
+                {track.title}
+              </h1>
+              <p className="text-sm sm:text-base text-emerald-100/85 leading-relaxed max-w-2xl">
                 {track.tagline}
               </p>
 
-              {/* Social Proof & Metrics Strip */}
-              <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-2 text-xs sm:text-sm">
+              {/* Track Metadata Bar */}
+              <div className="pt-2 flex flex-wrap items-center gap-4 sm:gap-6 text-xs text-emerald-100/90">
                 <div className="flex items-center gap-1.5">
                   <div className="flex text-amber-400">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-current" />
-                    ))}
+                    <Star className="w-4 h-4 fill-current" />
                   </div>
-                  <span className="font-bold text-white ml-0.5">{track.rating}</span>
-                  <span className="text-emerald-200/70">({track.reviewsCount} reviews)</span>
+                  <span className="font-bold text-white text-sm">
+                    {track.rating}
+                  </span>
+                  <span className="text-emerald-200/70">
+                    ({track.reviewsCount} reviews)
+                  </span>
                 </div>
-                <div className="flex items-center gap-1.5 text-emerald-100/90">
-                  <Users className="w-4 h-4 text-emerald-300" />
-                  <span>{track.studentsCount} alumni</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-emerald-100/90">
-                  <Clock className="w-4 h-4 text-emerald-300" />
+                <div className="flex items-center gap-1.5">
+                  <Clock className="w-4 h-4 text-[#ea8a42]" />
                   <span>{track.duration}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Briefcase className="w-4 h-4 text-[#ea8a42]" />
+                  <span>
+                    Avg Salary:{" "}
+                    <strong className="text-white">{track.avgSalary}</strong>
+                  </span>
                 </div>
               </div>
 
-              {/* Mentor Row Teaser */}
-              <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-emerald-950/60 border border-emerald-800/60 backdrop-blur-sm max-w-md">
+              {/* Mentor Teaser */}
+              <div className="flex items-center gap-3 pt-3">
                 <Image
                   src={track.mentor.avatar}
                   alt={track.mentor.name}
                   width={44}
                   height={44}
                   unoptimized
-                  className="w-11 h-11 rounded-full object-cover ring-2 ring-emerald-500/40"
+                  className="w-11 h-11 rounded-full object-cover ring-2 ring-emerald-500/50"
                 />
                 <div>
-                  <h4 className="text-xs font-bold text-white">
-                    Led by {track.mentor.name}
-                  </h4>
-                  <p className="text-[11px] text-emerald-200/80">
-                    {track.mentor.role} • <span className="font-semibold text-amber-300">{track.mentor.company}</span>
+                  <h2 className="text-xs sm:text-sm font-bold text-white leading-tight">
+                    Curated by {track.mentor.name}
+                  </h2>
+                  <p className="text-xs text-emerald-200/75">
+                    {track.mentor.role} •{" "}
+                    <span className="font-semibold text-white">
+                      {track.mentor.company}
+                    </span>
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Right Column: Sticky Enrollment Box */}
+            {/* Right Column: Sticky Free Access Box */}
             <div className="lg:col-span-5">
               <div className="bg-white rounded-3xl p-6 sm:p-8 text-stone-900 shadow-2xl border border-stone-200 relative">
-                {/* Save Badge */}
-                <div className="absolute -top-3.5 right-6 bg-[#f3843f] text-white text-xs font-black px-3.5 py-1 rounded-full shadow-md uppercase tracking-wider">
-                  Save {track.discountPercent}% Today
+                {/* Free Badge */}
+                <div className="absolute -top-3.5 right-6 bg-[#093c33] text-white text-xs font-black px-3.5 py-1 rounded-full shadow-md uppercase tracking-wider border border-emerald-700">
+                  Open Educational Resource
                 </div>
 
                 <span className="text-xs font-bold uppercase tracking-wider text-stone-400">
-                  Tuition & Enrollment
+                  Resource Hub
                 </span>
 
-                {/* Price Display */}
+                {/* Free Display */}
                 <div className="mt-2 flex items-baseline gap-3">
-                  <span className="text-4xl sm:text-5xl font-black text-[#093c33]">
-                    ${track.price}
-                  </span>
-                  <span className="text-lg text-stone-400 line-through">
-                    ${track.originalPrice}
+                  <span className="text-3xl sm:text-4xl font-black text-[#093c33]">
+                    100% Free Access
                   </span>
                   <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">
-                    One-time payment
+                    Zero Paywall
                   </span>
                 </div>
 
                 <p className="text-xs text-stone-500 mt-1">
-                  Full lifetime access to all {track.duration} & source files.
+                  Full unrestricted access to technical handbooks, architecture schemas &amp; GitHub projects.
                 </p>
 
-                {/* Key Benefits List */}
+                {/* Key Inclusions List */}
                 <div className="my-6 space-y-3 pt-5 border-t border-stone-100 text-xs text-stone-700">
                   <div className="flex items-center gap-2.5">
                     <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Next live cohort starts: <strong>{track.cohortStartDate}</strong></span>
+                    <span>
+                      <strong>{track.pdfResource?.title || "Complete Technical Handbook"}</strong> (
+                      {track.pdfResource?.pages || "80+ Pages"})
+                    </span>
                   </div>
                   <div className="flex items-center gap-2.5">
                     <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Weekly 1-on-1 code reviews with staff engineers</span>
+                    <span>
+                      <strong>{track.projects?.length || 2} Production Capstone Projects</strong> with source code
+                    </span>
                   </div>
                   <div className="flex items-center gap-2.5">
                     <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Private alumni Discord & verified job referrals</span>
+                    <span>Self-paced access • Read online or download offline PDF</span>
                   </div>
                   <div className="flex items-center gap-2.5">
                     <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Verifiable cryptographic certificate for LinkedIn</span>
+                    <span>Community like &amp; bookmarking system</span>
                   </div>
                 </div>
 
@@ -210,33 +221,37 @@ export default function TrackDetailPageContent({ track, allTracks }) {
                 <div className="mb-6 p-3 rounded-2xl bg-[#faf7f2] border border-stone-200 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Briefcase className="w-4 h-4 text-[#093c33]" />
-                    <span className="text-xs font-semibold text-stone-700">Average Graduate Salary</span>
+                    <span className="text-xs font-semibold text-stone-700">
+                      Average Graduate Benchmark
+                    </span>
                   </div>
-                  <span className="text-sm font-black text-[#093c33]">{track.avgSalary}</span>
+                  <span className="text-sm font-black text-[#093c33]">
+                    {track.avgSalary}
+                  </span>
                 </div>
 
                 {/* Main Action Buttons */}
                 <div className="space-y-3">
                   <button
-                    onClick={() => setIsEnrollModalOpen(true)}
+                    onClick={handleOpenPdf}
                     className="w-full py-4 rounded-2xl text-sm font-bold bg-[#f3843f] hover:bg-[#e0732f] text-white shadow-lg shadow-orange-950/20 hover:scale-[1.01] active:scale-98 transition-all flex items-center justify-center gap-2"
                   >
-                    <span>Enroll in This Track (${track.price})</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <FileText className="w-4 h-4" />
+                    <span>Read / Download Free PDF Guide</span>
                   </button>
 
                   <a
-                    href="#syllabus"
-                    className="w-full py-3 rounded-2xl text-xs font-semibold text-stone-700 bg-stone-100 hover:bg-stone-200 transition-colors block text-center"
+                    href="#projects"
+                    className="w-full py-3 rounded-2xl text-xs font-bold text-[#093c33] bg-emerald-50 hover:bg-emerald-100 transition-colors block text-center border border-emerald-200/80"
                   >
-                    View Full Week-by-Week Syllabus ↓
+                    Explore Capstone Projects ({track.projects?.length || 2}) ↓
                   </a>
                 </div>
 
-                {/* Risk-free Guarantee */}
+                {/* Open Pledge */}
                 <div className="mt-5 flex items-center justify-center gap-2 text-[11px] text-stone-500 text-center">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  <span>30-Day 100% Money-Back Guarantee. No questions asked.</span>
+                  <Sparkles className="w-3.5 h-3.5 text-[#f3843f]" />
+                  <span>No credit card required. Free for all developers worldwide.</span>
                 </div>
               </div>
             </div>
@@ -244,18 +259,18 @@ export default function TrackDetailPageContent({ track, allTracks }) {
         </div>
       </section>
 
-      {/* 2. TOOLS & TECHNOLOGIES STACK */}
-      <section className="py-8 bg-white border-b border-stone-200/80">
+      {/* 2. TECH STACK STRIP */}
+      <section className="py-8 bg-white border-b border-stone-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <span className="text-xs font-bold uppercase tracking-wider text-stone-500 whitespace-nowrap">
-              Technologies You Will Master:
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <span className="text-xs font-bold uppercase tracking-wider text-stone-500 shrink-0">
+              Core Technologies &amp; Tools Covered:
             </span>
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              {track.tools.map((tool, idx) => (
+            <div className="flex flex-wrap items-center justify-center md:justify-end gap-2">
+              {track.tools.map((tool) => (
                 <span
-                  key={idx}
-                  className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#faf7f2] border border-stone-200 text-stone-800"
+                  key={tool}
+                  className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#faf7f2] border border-stone-200 text-stone-800"
                 >
                   {tool}
                 </span>
@@ -304,7 +319,7 @@ export default function TrackDetailPageContent({ track, allTracks }) {
               Curriculum Roadmap
             </span>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-stone-900 mt-3">
-              Week-by-Week Detailed Syllabus
+              Module-by-Module Detailed Curriculum
             </h2>
             <p className="text-xs sm:text-sm text-stone-600 mt-2">
               Structured into hands-on sprints with clear milestones and code deliverables.
@@ -332,16 +347,16 @@ export default function TrackDetailPageContent({ track, allTracks }) {
                       </h3>
                     </div>
                     <ChevronDown
-                      className={`w-5 h-5 text-stone-500 transition-transform duration-200 ${
+                      className={`w-5 h-5 text-stone-500 transition-transform duration-200 shrink-0 ${
                         isOpen ? "rotate-180 text-[#f3843f]" : ""
                       }`}
                     />
                   </button>
 
                   {isOpen && (
-                    <div className="px-5 sm:px-6 pb-6 pt-1 text-xs sm:text-sm text-stone-600 space-y-3 animate-in fade-in duration-200 border-t border-stone-200/60 mt-1">
-                      <p className="leading-relaxed">{mod.desc}</p>
-                      <div className="p-3.5 rounded-xl bg-white border border-stone-200 text-xs font-semibold text-emerald-900 flex items-center gap-2">
+                    <div className="px-5 sm:px-6 pb-6 pt-2 space-y-3 text-xs sm:text-sm border-t border-stone-200/60 mt-1 animate-in fade-in duration-200">
+                      <p className="text-stone-600 leading-relaxed">{mod.desc}</p>
+                      <div className="p-3.5 rounded-xl bg-white border border-stone-200 text-stone-800 font-semibold flex items-center gap-2">
                         <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
                         <span>{mod.deliverable}</span>
                       </div>
@@ -355,7 +370,7 @@ export default function TrackDetailPageContent({ track, allTracks }) {
       </section>
 
       {/* 5. CAPSTONE PROJECTS SHOWCASE */}
-      <section className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="projects" className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-14">
           <span className="text-xs font-bold uppercase tracking-wider text-blue-800 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200">
             Portfolio Artifacts
@@ -364,7 +379,7 @@ export default function TrackDetailPageContent({ track, allTracks }) {
             Real Production Capstone Projects
           </h2>
           <p className="text-xs sm:text-sm text-stone-600 mt-2">
-            You will build and deploy these applications to showcase on GitHub and resume submissions.
+            Build, clone, and deploy these applications to showcase on GitHub and resume submissions.
           </p>
         </div>
 
@@ -375,9 +390,17 @@ export default function TrackDetailPageContent({ track, allTracks }) {
               className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
             >
               <div>
-                <div className="w-10 h-10 rounded-2xl bg-[#093c33] text-white flex items-center justify-center mb-4 shadow-sm">
-                  <Code2 className="w-5 h-5" />
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-2xl bg-[#093c33] text-white flex items-center justify-center shadow-sm">
+                    <Code2 className="w-5 h-5" />
+                  </div>
+                  <LikeButton
+                    id={`track_project_${proj.id || idx}`}
+                    initialLikes={proj.likes || 150}
+                    variant="badge"
+                  />
                 </div>
+
                 <h3 className="text-lg sm:text-xl font-bold text-stone-900 mb-2">
                   {proj.title}
                 </h3>
@@ -386,15 +409,39 @@ export default function TrackDetailPageContent({ track, allTracks }) {
                 </p>
               </div>
 
-              <div className="pt-4 border-t border-stone-100 flex flex-wrap gap-2">
-                {proj.tech.map((t, i) => (
-                  <span
-                    key={i}
-                    className="text-[11px] font-semibold px-2.5 py-1 rounded-md bg-stone-100 text-stone-700"
+              <div>
+                <div className="pt-4 border-t border-stone-100 flex flex-wrap gap-2 mb-4">
+                  {proj.tech.map((t, i) => (
+                    <span
+                      key={i}
+                      className="text-[11px] font-semibold px-2.5 py-1 rounded-md bg-stone-100 text-stone-700"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => handleOpenProject(proj)}
+                    className="py-2.5 rounded-xl text-xs font-bold text-stone-700 bg-white hover:bg-stone-50 border border-stone-200 transition-colors flex items-center justify-center gap-1.5"
                   >
-                    {t}
-                  </span>
-                ))}
+                    <Sparkles className="w-3.5 h-3.5 text-[#f3843f]" />
+                    <span>View Architecture</span>
+                  </button>
+
+                  {proj.demoUrl && (
+                    <a
+                      href={proj.demoUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="py-2.5 rounded-xl text-xs font-bold text-white bg-[#093c33] hover:bg-[#072e27] shadow-sm transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <span>Live Demo</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           ))}
@@ -417,7 +464,7 @@ export default function TrackDetailPageContent({ track, allTracks }) {
 
             <div className="space-y-3 text-center md:text-left">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-600/40 text-xs font-bold text-emerald-200">
-                <span>Verified Lead Instructor</span>
+                <span>Verified Curriculum Lead</span>
               </div>
               <h3 className="text-2xl sm:text-3xl font-bold text-white">
                 {track.mentor.name}
@@ -440,7 +487,7 @@ export default function TrackDetailPageContent({ track, allTracks }) {
             Explore Other Career Tracks
           </h2>
           <p className="text-xs sm:text-sm text-stone-600 mt-2">
-            Looking for something else? Browse our other high-demand cohorts.
+            Looking for something else? Browse our other high-demand free tracks.
           </p>
         </div>
 
@@ -464,7 +511,7 @@ export default function TrackDetailPageContent({ track, allTracks }) {
               </div>
 
               <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between text-xs font-bold">
-                <span className="text-[#093c33]">${t.price}</span>
+                <span className="text-[#093c33] font-bold">100% Free</span>
                 <span className="text-[#f3843f] flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
                   View Track →
                 </span>
@@ -474,87 +521,22 @@ export default function TrackDetailPageContent({ track, allTracks }) {
         </div>
       </section>
 
-      {/* ENROLLMENT MODAL */}
-      {isEnrollModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-stone-200 relative animate-in zoom-in-95 duration-200">
-            <button
-              onClick={() => setIsEnrollModalOpen(false)}
-              className="absolute top-5 right-5 w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 flex items-center justify-center transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
+      {/* MODALS */}
+      <PdfPreviewModal
+        pdf={selectedPdf}
+        isOpen={Boolean(selectedPdf)}
+        onClose={() => setSelectedPdf(null)}
+      />
 
-            {!enrollSuccess ? (
-              <div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                  FALL COHORT REGISTRATION
-                </span>
-
-                <h3 className="text-xl font-bold text-stone-900 mt-2 leading-tight">
-                  Enroll in {track.name}
-                </h3>
-
-                <p className="text-xs text-stone-500 mt-1">
-                  Mentor: {track.mentor.name} ({track.mentor.company})
-                </p>
-
-                <div className="my-5 p-4 rounded-2xl bg-[#faf7f2] border border-stone-200 flex items-center justify-between">
-                  <div>
-                    <span className="text-xs text-stone-500">Cohort Tuition</span>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-black text-[#093c33]">
-                        ${track.price}
-                      </span>
-                      <span className="text-xs text-stone-400 line-through">
-                        ${track.originalPrice}
-                      </span>
-                    </div>
-                  </div>
-                  <span className="text-xs font-bold text-orange-600 bg-orange-100 px-2.5 py-1 rounded-full">
-                    Save {track.discountPercent}%
-                  </span>
-                </div>
-
-                <div className="space-y-2 mb-6 text-xs text-stone-700">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Includes all {track.duration} + weekly live mentor calls</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Private Discord lounge & GitHub repository access</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Official accredited certificate on completion</span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleEnrollConfirm}
-                  className="w-full py-3.5 rounded-xl text-sm font-bold bg-[#f3843f] hover:bg-[#e0732f] text-white shadow-lg shadow-orange-950/20 transition-all flex items-center justify-center gap-2"
-                >
-                  <span>Complete Cohort Enrollment (${track.price})</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <div className="text-center py-6">
-                <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center mb-4">
-                  <CheckCircle className="w-8 h-8" />
-                </div>
-                <h3 className="text-xl font-bold text-stone-900">
-                  Enrollment Successful!
-                </h3>
-                <p className="text-xs text-stone-600 mt-2 max-w-xs mx-auto">
-                  You are officially enrolled in the <strong>{track.name}</strong> cohort starting on {track.cohortStartDate}. Check your email for GitHub and Discord invites.
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      <ProjectDetailModal
+        project={selectedProject}
+        isOpen={Boolean(selectedProject)}
+        onClose={() => setSelectedProject(null)}
+        onOpenPdf={() => {
+          setSelectedProject(null);
+          handleOpenPdf();
+        }}
+      />
     </div>
   );
 }

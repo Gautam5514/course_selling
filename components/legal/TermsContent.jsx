@@ -23,8 +23,8 @@ export default function TermsContent() {
     { id: "acceptance", label: "1. Acceptance of Terms", icon: CheckCircle2 },
     { id: "services", label: "2. Services & Platform Access", icon: BookOpen },
     { id: "account", label: "3. User Accounts & Security", icon: ShieldCheck },
-    { id: "payments", label: "4. Tuition, Billing & Taxes", icon: CreditCard },
-    { id: "refunds", label: "5. 30-Day Refund Policy", icon: RotateCcw },
+    { id: "payments", label: "4. 100% Free Open-Access Model", icon: CheckCircle2 },
+    { id: "refunds", label: "5. Projects & PDF Licensing", icon: FileText },
     { id: "conduct", label: "6. Code of Conduct & IP", icon: FileText },
     { id: "liability", label: "7. Limitations of Liability", icon: Scale },
     { id: "contact", label: "8. Contact & Legal Notices", icon: Mail },
@@ -157,34 +157,34 @@ export default function TermsContent() {
             <section id="payments" className="scroll-mt-32 space-y-4">
               <h2 className="text-xl sm:text-2xl font-bold text-stone-900 border-b border-stone-100 pb-3 flex items-center gap-3">
                 <span className="w-8 h-8 rounded-lg bg-[#093c33]/10 text-[#093c33] flex items-center justify-center text-sm font-bold">4</span>
-                Tuition, Billing &amp; Taxes
+                100% Free Open-Access Model
               </h2>
               <p>
-                Course fees are quoted in USD or localized currency where supported. Payments are securely tokenized and processed via Stripe and PCI-DSS Level 1 compliant gateways.
+                helloS is provided as a free educational resource hub. Users are not charged tuition fees, monthly subscriptions, or hidden maintenance costs. No credit card or banking information is collected by helloS.
               </p>
               <p>
-                For installment or subscription plans, your designated payment method will be charged automatically on each scheduled renewal cycle until completed or canceled in your account settings. Applicable value-added taxes (VAT/GST) are calculated based on your billing region.
+                All technical PDF notes, study handbooks, and GitHub repository starter files are accessible without financial consideration.
               </p>
             </section>
 
             {/* Section 5 */}
-            <section id="refunds" className="scroll-mt-32 space-y-4 bg-orange-50/60 p-6 rounded-2xl border border-orange-200/80">
-              <h2 className="text-xl sm:text-2xl font-bold text-stone-900 border-b border-orange-200 pb-3 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-[#f3843f] text-white flex items-center justify-center text-sm font-bold">5</span>
-                30-Day 100% Money-Back Guarantee
+            <section id="refunds" className="scroll-mt-32 space-y-4 bg-emerald-50/60 p-6 rounded-2xl border border-emerald-200/80">
+              <h2 className="text-xl sm:text-2xl font-bold text-stone-900 border-b border-emerald-200 pb-3 flex items-center gap-3">
+                <span className="w-8 h-8 rounded-lg bg-[#093c33] text-white flex items-center justify-center text-sm font-bold">5</span>
+                Projects &amp; PDF Educational Licensing
               </h2>
               <p className="font-medium text-stone-800">
-                We believe wholeheartedly in our curriculums. If you enroll in any track on <strong className="text-stone-900">hellobject.com</strong> and find it is not the right fit for your career trajectory, you are entitled to a full 100% refund within 30 days of purchase.
+                All open-source project codebases made available on <strong className="text-stone-900">hellobject.com</strong> may be cloned, modified, and used in your personal portfolios, learning projects, and job interview showcases.
               </p>
               <p className="text-xs sm:text-sm text-stone-600">
-                To request a refund, submit a ticket through your dashboard or email <a href="mailto:refunds@hellobject.com" className="font-bold text-[#093c33] underline">refunds@hellobject.com</a> with your order number. Refunds are processed back to your original payment method within 3 to 5 business days without hassle.
+                Because all materials are offered 100% free of charge, there are no fee refunds or financial disputes applicable. You are welcome to share and like our resources freely.
               </p>
               <div className="pt-2">
                 <Link
-                  href="/refunds"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#f3843f] hover:underline"
+                  href="/projects"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#093c33] hover:underline"
                 >
-                  <span>Read our complete Refund &amp; Cancellation Policy</span>
+                  <span>Explore Open-Source Capstone Projects</span>
                   <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
               </div>

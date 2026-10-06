@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import BrandLogo from "./BrandLogo";
 import { navLinks } from "../data/landingData";
-import { Menu, X, ArrowRight } from "lucide-react";
+import { Menu, X, ArrowRight, Code2, FileText } from "lucide-react";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -17,7 +17,7 @@ export default function Navbar() {
           <BrandLogo size="md" />
 
           {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-7">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
@@ -30,18 +30,20 @@ export default function Navbar() {
           </nav>
 
           {/* Right Action Buttons */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-4">
             <Link
-              href="#login"
-              className="text-sm font-medium text-emerald-100/90 hover:text-white transition-colors"
+              href="/pdf-notes"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-100/90 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5"
             >
-              Log in
+              <FileText className="w-4 h-4 text-[#f3843f]" />
+              <span>PDF Notes</span>
             </Link>
             <Link
-              href="#signup"
-              className="inline-flex items-center justify-center px-5 py-2.5 rounded-full text-sm font-semibold bg-[#eb793e] hover:bg-[#da6c32] text-white shadow-sm hover:shadow-md transition-all active:scale-95"
+              href="/projects"
+              className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-semibold bg-[#eb793e] hover:bg-[#da6c32] text-white shadow-sm hover:shadow-md transition-all active:scale-95"
             >
-              Sign up
+              <Code2 className="w-4 h-4" />
+              <span>Explore Projects</span>
             </Link>
           </div>
 
@@ -75,18 +77,20 @@ export default function Navbar() {
           </div>
           <div className="pt-4 border-t border-emerald-900/50 flex flex-col gap-3">
             <Link
-              href="#login"
+              href="/pdf-notes"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-2.5 text-sm font-medium text-emerald-100 hover:text-white"
+              className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-emerald-100 hover:bg-white/5"
             >
-              Log in
+              <FileText className="w-4 h-4 text-[#f3843f]" />
+              <span>Browse PDF Notes</span>
             </Link>
             <Link
-              href="#signup"
+              href="/projects"
               onClick={() => setMobileMenuOpen(false)}
               className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-full text-sm font-semibold bg-[#eb793e] hover:bg-[#da6c32] text-white"
             >
-              Sign up <ArrowRight className="w-4 h-4" />
+              <Code2 className="w-4 h-4" />
+              <span>Explore Projects</span>
             </Link>
           </div>
         </div>

@@ -1,10 +1,14 @@
 "use client";
 
-import { Search, SparkleStar, DoodleUnderline } from "@/components/DecorativeShapes";
+import { SparkleStar, DoodleUnderline } from "@/components/DecorativeShapes";
+import { blogCategories } from "@/data/blogsData";
 
-export default function BlogHero({ activeCategory, setActiveCategory, searchQuery, setSearchQuery }) {
-  const categories = ["All Topics", "Engineering", "UI/UX Design", "Career Tips", "AI & Future"];
-
+export default function BlogHero({
+  activeCategory,
+  setActiveCategory,
+  searchQuery,
+  setSearchQuery,
+}) {
   return (
     <section className="relative bg-[#0b382d] pt-14 pb-20 sm:pb-24 text-white overflow-hidden">
       {/* Background Grid Pattern */}
@@ -25,14 +29,14 @@ export default function BlogHero({ activeCategory, setActiveCategory, searchQuer
         {/* Pill Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-700/40 text-xs sm:text-sm text-emerald-200 backdrop-blur-md mb-6">
           <span className="w-2 h-2 rounded-full bg-[#f3843f]" />
-          <span>The helloS Publication</span>
+          <span>helloS Technical Publication &amp; Blueprints</span>
         </div>
 
         {/* Heading */}
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white leading-[1.15] max-w-4xl">
-          Insights, Stories &amp;{" "}
+          Engineering Guides, AI &amp;{" "}
           <span className="relative inline-block">
-            <span>Engineering Guides</span>
+            <span>Modern Systems</span>
             <span className="absolute -bottom-3 left-0 w-full pointer-events-none">
               <DoodleUnderline className="w-full h-3 text-[#f3843f]" />
             </span>
@@ -41,7 +45,7 @@ export default function BlogHero({ activeCategory, setActiveCategory, searchQuer
 
         {/* Subtitle */}
         <p className="mt-7 text-base sm:text-lg text-emerald-100/75 max-w-2xl leading-relaxed">
-          Deep dives into software architecture, product design craft, and career tactics from engineers and educators on the ground.
+          Exhaustive architectural deep dives on Next.js 16, Google Gemma 2 local inference, dot3 multi-agent swarms, and scalable software design.
         </p>
 
         {/* Search Bar */}
@@ -51,7 +55,7 @@ export default function BlogHero({ activeCategory, setActiveCategory, searchQuer
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search tutorials, design tips, guides..."
+              placeholder="Search Next.js, Gemma AI, dot3, architecture..."
               className="w-full bg-emerald-950/80 border border-emerald-700/60 rounded-full pl-5 pr-12 py-3.5 text-xs sm:text-sm text-white placeholder-emerald-300/40 focus:outline-none focus:border-[#f3843f] backdrop-blur-sm"
             />
           </div>
@@ -59,19 +63,24 @@ export default function BlogHero({ activeCategory, setActiveCategory, searchQuer
 
         {/* Category Pills */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
-                activeCategory === cat
-                  ? "bg-white text-[#0b382d] shadow-sm scale-105"
-                  : "bg-emerald-950/50 text-emerald-200/80 hover:bg-emerald-900/60 hover:text-white"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+          {blogCategories.map((cat) => {
+            const isSelected =
+              activeCategory === cat ||
+              (activeCategory === "All Topics" && cat === "All Articles");
+            return (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
+                  isSelected
+                    ? "bg-white text-[#0b382d] shadow-sm scale-105"
+                    : "bg-emerald-950/50 text-emerald-200/80 hover:bg-emerald-900/60 hover:text-white"
+                }`}
+              >
+                {cat}
+              </button>
+            );
+          })}
         </div>
       </div>
     </section>

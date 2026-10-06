@@ -8,24 +8,24 @@ export default function PricingFaq() {
 
   const faqs = [
     {
-      q: "Can I switch between monthly and annual plans?",
-      a: "Yes, you can upgrade, downgrade, or switch billing intervals at any time from your student account settings. Upgrades take effect immediately with prorated billing.",
+      q: "Why is helloS 100% free without charging money?",
+      a: "Our core vision and niche is to provide high-quality developer resources: in-depth technical PDF notes, cheatsheets, and production-grade GitHub projects. We believe foundational engineering knowledge should be open and accessible to all developers without predatory subscription walls.",
     },
     {
-      q: "Is there a free trial for the Pro Learner plan?",
-      a: "Absolutely! We offer a full 14-day free trial on the Pro Learner tier so you can attend live virtual classrooms, test assignments, and experience mentorship risk-free.",
+      q: "Will you ask for my credit card or bank details?",
+      a: "No! There are zero checkout forms, no credit card requirements, and no payment gateways. You can browse, read, like, and download our handbooks and code repositories immediately.",
     },
     {
-      q: "What is your refund policy?",
-      a: "We offer a 30-day money-back guarantee. If you are not completely satisfied with your learning experience or the course curriculum, contact our support team for a full refund.",
+      q: "Can I download the PDF handbooks and keep them forever?",
+      a: "Yes! Every handbook is downloadable with 1 click. You can keep them on your laptop, iPad, or e-reader for offline reading and revision anytime.",
     },
     {
-      q: "Can my employer sponsor my subscription?",
-      a: "Yes! Many of our students have their helloS subscriptions covered through corporate learning and development stipends. We provide official invoices and receipts upon checkout.",
+      q: "Can I use the projects in my personal portfolio or at work?",
+      a: "Yes. All capstone project repositories are open source. You can clone them, inspect the architectures, customize them, and showcase them in your GitHub portfolio and job applications.",
     },
     {
-      q: "Are the course certificates verified and shareable?",
-      a: "Every certificate earned through helloS comes with a unique verification URL and cryptographic ID that can be embedded on LinkedIn profiles, resumes, and personal websites.",
+      q: "How does the 'Like' feature work?",
+      a: "Clicking the heart Like button on any project or PDF handbook saves it to your local browser favorites, increments the global community appreciation score, and helps highlight the best resources.",
     },
   ];
 
@@ -40,7 +40,7 @@ export default function PricingFaq() {
             Frequently Asked Questions
           </h2>
           <p className="mt-3 text-sm text-stone-600">
-            Have questions about our plans? We have answers.
+            Learn more about our free open access model and resource catalog.
           </p>
         </div>
 

@@ -72,6 +72,114 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 
+/* ===== Hero rotating word hook ===== */
+@keyframes hwRotateIn {
+  0% {
+    opacity: 0;
+    transform: translateY(90%) rotateX(-70deg) scale(0.9);
+    filter: blur(2px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-6%) rotateX(0deg) scale(1.02);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg) scale(1);
+  }
+}
+
+@keyframes hwRotateOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg) scale(1);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-90%) rotateX(70deg) scale(0.9);
+    filter: blur(2px);
+  }
+}
+
+.hw-rotate-in {
+  animation: hwRotateIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: center bottom;
+}
+
+.hw-rotate-out {
+  animation: hwRotateOut 0.42s cubic-bezier(0.55, 0, 0.65, 0.3) both;
+  transform-origin: center top;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hw-rotate-in,
+  .hw-rotate-out {
+    animation: none;
+  }
+}
+
+/* ===== Green "train" light running around the card border on hover ===== */
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes spinBorder {
+  to { --border-angle: 360deg; }
+}
+
+.card-glow {
+  position: relative;
+  z-index: 0;
+}
+
+/* a short bright-green arc that travels around the border edge */
+.card-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  border-radius: inherit;
+  padding: 2.5px; /* border thickness */
+  background: conic-gradient(
+    from var(--border-angle),
+    transparent 0deg,
+    transparent 300deg,
+    rgba(16, 185, 129, 0.15) 320deg,
+    #34d399 340deg,
+    #6ee7b7 350deg,
+    #ffffff 358deg,
+    #34d399 360deg
+  );
+  /* mask shows only the padding ring, hollow center */
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.card-glow:hover::before {
+  opacity: 1;
+  animation: spinBorder 2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-glow:hover::before {
+    animation: none;
+    opacity: 0;
+  }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

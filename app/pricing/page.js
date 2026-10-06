@@ -3,9 +3,9 @@ import Footer from "@/components/Footer";
 import PricingPageContent from "@/components/pricing/PricingPageContent";
 
 export const metadata = {
-  title: "Pricing Plans — helloS | Transparent, Flexible Investment",
+  title: "100% Free & Open Access Pledge — helloS",
   description:
-    "Explore helloS membership tiers. Access 500+ masterclasses, live virtual classrooms, 1-on-1 mentorship, and job placement support with no hidden fees.",
+    "helloS is 100% free with zero paywalls and zero subscriptions. Download comprehensive technical PDF notes and open-source production projects freely.",
 };
 
 export default function PricingPage() {

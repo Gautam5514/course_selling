@@ -4,28 +4,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { LeftEdgeConcentricRings, StarburstDoodle } from "@/components/DecorativeShapes";
+import { techBlogPosts } from "@/data/blogsData";
 
 export default function BlogInsights() {
-  const articles = [
-    {
-      title: "The 2025 AI Engineer Roadmap: Prompting to Agents",
-      description: "Essential frameworks, vector databases, and multi-agent patterns reshaping software.",
-      image: "/images/blog-yellow-sweater.jpg",
-      href: "/blog",
-    },
-    {
-      title: "From Figma to React: Building Production Token Systems",
-      description: "How modern product teams eliminate design drift and sync multi-brand tokens automatically.",
-      image: "/images/blog-2.jpg",
-      href: "/blog",
-    },
-    {
-      title: "Cracking Senior Engineering System Design Interviews",
-      description: "Battle-tested architectural strategies from FAANG leads to ace technical screenings.",
-      image: "/images/blog-3.jpg",
-      href: "/blog",
-    },
-  ];
+  // Pull the first 3 real blog posts so cards link to actual articles
+  const articles = techBlogPosts.slice(0, 3).map((post) => ({
+    title: post.title,
+    description: post.subtitle || post.summary,
+    image: post.heroImage,
+    href: `/blog/${post.slug}`,
+  }));
 
   return (
     <section id="blog" className="py-20 sm:py-28 bg-white relative overflow-hidden">
@@ -65,9 +53,10 @@ export default function BlogInsights() {
         {/* 3 Articles Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
           {articles.map((item, idx) => (
-            <article
+            <Link
               key={idx}
-              className="bg-[#fcf8f2]/70 rounded-[28px] sm:rounded-[32px] overflow-hidden border border-stone-200/70 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col group"
+              href={item.href}
+              className="bg-[#fcf8f2]/70 rounded-[28px] sm:rounded-[32px] overflow-hidden border border-stone-200/70 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col group cursor-pointer"
             >
               {/* Image Container with Rounded Corners */}
               <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-100 p-2 sm:p-2.5 pb-0">
@@ -85,11 +74,11 @@ export default function BlogInsights() {
               {/* Content Body */}
               <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between">
                 <div>
-                  <h3 className="text-base sm:text-lg font-bold text-[#111827] group-hover:text-[#f3843f] transition-colors leading-snug">
+                  <h3 className="text-base sm:text-lg font-bold text-[#111827] group-hover:text-[#f3843f] transition-colors leading-snug line-clamp-2">
                     {item.title}
                   </h3>
 
-                  <p className="mt-2.5 text-xs sm:text-[13px] text-stone-500 leading-relaxed">
+                  <p className="mt-2.5 text-xs sm:text-[13px] text-stone-500 leading-relaxed line-clamp-3">
                     {item.description}
                   </p>
                 </div>
@@ -104,7 +93,7 @@ export default function BlogInsights() {
                   </div>
                 </div>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       </div>
