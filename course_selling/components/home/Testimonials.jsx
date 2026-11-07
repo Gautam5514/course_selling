@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Star } from "lucide-react";
 import { api } from "@/lib/api";
 
-/** Reviews written by students on the reader pages come first; the built-in
- *  stories only fill the row while there are fewer than three real ones. */
-const MIN_CARDS = 3;
+/** Only real reviews written by students on the reader pages are shown.
+ *  While there are none, the whole section stays hidden. */
 
 // Hand-drawn 5-point outline star
 function DoodleStarOutline({ className = "w-6 h-6 text-white" }) {
@@ -45,30 +43,6 @@ function TitleRaysDoodle({ className = "w-6 h-6 text-white" }) {
   );
 }
 
-const STATIC = [
-    {
-      name: "Alex Rivera",
-      role: "Senior Frontend Engineer, Stripe",
-      rating: "5.0",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80",
-      text: "Gopo Workspace took me from struggling through disconnected tutorials to confidently architecting production Next.js apps. Within 90 days of graduating, I landed a Senior Frontend role at Stripe with a 65% salary bump!",
-    },
-    {
-      name: "Maya Patel",
-      role: "Lead Product Designer, Figma",
-      rating: "5.0",
-      avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=120&auto=format&fit=crop&q=80",
-      text: "The live Figma design system critiques with Natasha were better than an entire master's degree. Having senior mentors review every token helped me transition smoothly into a Lead Product Designer position.",
-    },
-    {
-      name: "Marcus Chen",
-      role: "AI Systems Engineer, Microsoft",
-      rating: "5.0",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80",
-      text: "Most courses teach outdated demos. Gopo Workspace's Generative AI curriculum covers actual production RAG, vector indexes, and multi-agent systems. The capstone project directly impressed my hiring team at Microsoft.",
-    },
-];
-
 function fromReview(r) {
   return {
     id: r.id,
@@ -77,9 +51,7 @@ function fromReview(r) {
     href: r.note ? `/pdf/${r.note.slug}` : null,
     rating: r.rating,
     initials: r.name.trim().slice(0, 1).toUpperCase(),
-    avatar: null,
     text: r.review,
-    real: true,
   };
 }
 
@@ -97,8 +69,8 @@ export default function Testimonials() {
     };
   }, []);
 
-  const real = reviews ?? [];
-  const testimonials = real.length >= MIN_CARDS ? real : [...real, ...STATIC.slice(0, MIN_CARDS - real.length)];
+  const testimonials = reviews ?? [];
+  if (testimonials.length === 0) return null; // nothing fake, nothing empty
 
   return (
     <section id="reviews" className="py-20 sm:py-28 bg-[#faf7f2] relative">
@@ -141,9 +113,7 @@ export default function Testimonials() {
 
             {/* Subtitle */}
             <p className="mt-5 text-xs sm:text-[13px] text-emerald-100/75 leading-relaxed max-w-xl mx-auto font-normal">
-              {real.length > 0
-                ? "Real reviews from students reading our notes. Every review here was written on the notes page after signing in."
-                : "Over 48,000 ambitious engineers and designers have accelerated their careers on Gopo Workspace. Here is how our alumni landed roles at world-class tech companies."}
+              Real reviews from students reading our notes. Every review here was written on the notes page after signing in.
             </p>
           </div>
 
@@ -152,28 +122,15 @@ export default function Testimonials() {
             {testimonials.map((item, idx) => (
               <div
                 key={item.id ?? idx}
-                className={`snap-center rounded-[26px] bg-[#124237]/90 border border-emerald-700/30 p-6 sm:p-7 flex flex-col justify-between shrink-0 w-[300px] sm:w-[360px] transition-all duration-300 ${
-                  item.real ? "shadow-2xl ring-1 ring-white/10" : "opacity-85"
-                }`}
+                className="snap-center rounded-[26px] bg-[#124237]/90 border border-emerald-700/30 p-6 sm:p-7 flex flex-col justify-between shrink-0 w-[300px] sm:w-[360px] shadow-2xl ring-1 ring-white/10"
               >
                 <div>
                   {/* Top Row: Avatar + Name/Role on Left, Big Quote Icon on Right */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3 min-w-0">
-                      {item.avatar ? (
-                        <Image
-                          src={item.avatar}
-                          alt={item.name}
-                          width={42}
-                          height={42}
-                          unoptimized
-                          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover ring-2 ring-emerald-500/30"
-                        />
-                      ) : (
-                        <span className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-[#f3843f] to-[#d96e2b] text-white text-sm font-extrabold flex items-center justify-center ring-2 ring-emerald-500/30 shrink-0">
-                          {item.initials}
-                        </span>
-                      )}
+                      <span className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-[#f3843f] to-[#d96e2b] text-white text-sm font-extrabold flex items-center justify-center ring-2 ring-emerald-500/30 shrink-0">
+                        {item.initials}
+                      </span>
                       <div className="min-w-0">
                         <h4 className="text-sm sm:text-base font-bold text-white leading-snug truncate">{item.name}</h4>
                         {item.href ? (
@@ -200,7 +157,7 @@ export default function Testimonials() {
                       ))}
                     </div>
                     <span className="text-xs font-bold text-white ml-0.5">{Number(item.rating).toFixed(1)}</span>
-                    {item.real && <span className="ml-1 px-1.5 py-0.5 rounded-md bg-white/10 text-[9px] font-extrabold uppercase tracking-wider text-emerald-100/80">Verified student</span>}
+                    <span className="ml-1 px-1.5 py-0.5 rounded-md bg-white/10 text-[9px] font-extrabold uppercase tracking-wider text-emerald-100/80">Verified student</span>
                   </div>
 
                   {/* Review Text */}
