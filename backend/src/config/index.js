@@ -33,9 +33,20 @@ export const config = {
   nodeEnv,
   isProd,
   port: int('PORT', 5001),
+  // Allowed browser origins. Accepts "https://site.com", "https://site.com/"
+  // (slash and path dropped) and wildcards like "https://*.vercel.app".
   corsOrigins: (process.env.CORS_ORIGINS ?? 'http://localhost:3000')
     .split(',')
-    .map((o) => o.trim())
+    .map((o) => o.trim().toLowerCase().replace(/\/+$/, ''))
+    .map((o) => {
+      try {
+        if (o.includes('*')) return o; // keep wildcards verbatim
+        const u = new URL(o);
+        return `${u.protocol}//${u.host}`;
+      } catch {
+        return o;
+      }
+    })
     .filter(Boolean),
 
   mongoUri: required('MONGODB_URI', 'mongodb://127.0.0.1:27017/course_lms'),

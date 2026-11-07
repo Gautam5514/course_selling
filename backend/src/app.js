@@ -12,6 +12,16 @@ import { attachUser } from './auth/middleware.js';
 import { buildApiRouter } from './routes/index.js';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 
+/** Does `origin` match one of the configured origins (exact or `https://*.host`)? */
+export function isAllowedOrigin(origin) {
+  const o = String(origin).toLowerCase().replace(/\/+$/, '');
+  return config.corsOrigins.some((allowed) => {
+    if (!allowed.includes('*')) return allowed === o;
+    const rx = new RegExp(`^${allowed.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '[a-z0-9-]+')}$`);
+    return rx.test(o);
+  });
+}
+
 export function createApp() {
   const app = express();
 
@@ -21,8 +31,9 @@ export function createApp() {
     cors({
       origin(origin, cb) {
         // Allow same-origin / server-to-server (no origin) and whitelisted origins.
-        if (!origin || config.corsOrigins.includes(origin)) return cb(null, true);
-        return cb(ApiError.forbidden('This website is not allowed to access the API.'));
+        if (!origin || isAllowedOrigin(origin)) return cb(null, true);
+        logger.warn({ origin, allowed: config.corsOrigins }, 'CORS: origin rejected. Add it to CORS_ORIGINS.');
+        return cb(ApiError.forbidden(`This website (${origin}) is not allowed to access the API. Add it to CORS_ORIGINS on the server.`));
       },
       credentials: true,
     })
