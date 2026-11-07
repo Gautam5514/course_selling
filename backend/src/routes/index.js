@@ -33,7 +33,7 @@ export function buildApiRouter() {
     });
   });
 
-  api.use('/auth', authLimiter, authRoutes);
+  api.use('/auth', authRoutes(authLimiter));
   api.use('/uploads', uploadRoutes);
 
   // Public (read) namespaces.

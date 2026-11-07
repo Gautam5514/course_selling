@@ -27,7 +27,10 @@ function bool(name, fallback) {
 }
 
 const nodeEnv = process.env.NODE_ENV ?? 'development';
-const isProd = nodeEnv === 'production';
+// Render always sets RENDER=true. Treat it as production even if NODE_ENV was
+// overridden by a pasted local .env (that gives non-Secure, SameSite=Lax cookies
+// which browsers drop on a cross-site Vercel -> Render login).
+const isProd = nodeEnv === 'production' || process.env.RENDER === 'true';
 
 export const config = {
   nodeEnv,
@@ -54,6 +57,7 @@ export const config = {
   jwtSecret: isProd
     ? required('JWT_SECRET')
     : process.env.JWT_SECRET || 'dev-insecure-secret-change-me',
+  bcryptRounds: int('BCRYPT_ROUNDS', 10),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '7d',
   authCookieName: process.env.AUTH_COOKIE_NAME ?? 'course_token',
   cookieSecure: bool('COOKIE_SECURE', isProd),

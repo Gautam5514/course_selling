@@ -15,6 +15,26 @@ export const API_BASE_URL = (
 
 import { getVisitorId } from "./visitor";
 
+// Browsers (Safari, Chrome incognito, Brave) drop third-party cookies, and the
+// API lives on another domain (onrender.com) than the site (vercel.app). Keep
+// the JWT from the login response as a Bearer fallback so sessions still work.
+const TOKEN_KEY = "course_token";
+function getToken() {
+  try {
+    return typeof window === "undefined" ? null : window.localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+function setToken(token) {
+  try {
+    if (token) window.localStorage.setItem(TOKEN_KEY, token);
+    else window.localStorage.removeItem(TOKEN_KEY);
+  } catch {
+    /* storage blocked: cookie auth only */
+  }
+}
+
 /** Turn a backend-relative path (e.g. /api/uploads/:id/raw) into an absolute URL. */
 export function absoluteUrl(pathOrUrl) {
   if (!pathOrUrl) return null;
@@ -151,9 +171,11 @@ async function request(path, { method = "GET", body, headers, signal, cache, nex
   const url = `${API_BASE_URL}${path.startsWith("/") ? "" : "/"}${path}`;
   const visitorId = getVisitorId(); // null on the server
 
-  // Give up after 15s so a hung backend never freezes the UI.
+  // Render's free tier sleeps and needs ~50s to wake, so give a cold start
+  // room (60s) instead of reporting a failure after 15s.
   const controller = signal ? null : new AbortController();
-  const timer = controller ? setTimeout(() => controller.abort(), 15000) : null;
+  const timer = controller ? setTimeout(() => controller.abort(), 60000) : null;
+  const token = getToken();
 
   let res;
   try {
@@ -162,6 +184,7 @@ async function request(path, { method = "GET", body, headers, signal, cache, nex
       headers: {
         ...(body ? { "Content-Type": "application/json" } : {}),
         ...(visitorId ? { "X-Visitor-Id": visitorId } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...headers,
       },
       body: body ? JSON.stringify(body) : undefined,
@@ -323,14 +346,22 @@ export const api = {
   me(opts = {}) {
     return request("/api/auth/me", { cache: "no-store", ...opts });
   },
-  login(email, password) {
-    return request("/api/auth/login", { method: "POST", body: { email, password } });
+  async login(email, password) {
+    const res = await request("/api/auth/login", { method: "POST", body: { email, password } });
+    setToken(res?.data?.token);
+    return res;
   },
-  register(name, email, password) {
-    return request("/api/auth/register", { method: "POST", body: { name, email, password } });
+  async register(name, email, password) {
+    const res = await request("/api/auth/register", { method: "POST", body: { name, email, password } });
+    setToken(res?.data?.token);
+    return res;
   },
-  logout() {
-    return request("/api/auth/logout", { method: "POST" });
+  async logout() {
+    try {
+      return await request("/api/auth/logout", { method: "POST" });
+    } finally {
+      setToken(null);
+    }
   },
 
   // ─── Today Code (problem of the day) ─────────────────────────────────────

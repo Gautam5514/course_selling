@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { config } from '../config/index.js';
 
 const { Schema, model } = mongoose;
 
@@ -23,11 +24,20 @@ const userSchema = new Schema(
 );
 
 userSchema.methods.setPassword = async function setPassword(plain) {
-  this.passwordHash = await bcrypt.hash(plain, 12);
+  this.passwordHash = await bcrypt.hash(plain, config.bcryptRounds);
 };
 
 userSchema.methods.verifyPassword = function verifyPassword(plain) {
   return bcrypt.compare(plain, this.passwordHash);
+};
+
+/** True when the stored hash uses a higher cost than configured (slow on small hosts). */
+userSchema.methods.needsRehash = function needsRehash() {
+  try {
+    return bcrypt.getRounds(this.passwordHash) > config.bcryptRounds;
+  } catch {
+    return false;
+  }
 };
 
 userSchema.methods.toSafeJSON = function toSafeJSON() {

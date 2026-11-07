@@ -12,6 +12,12 @@ export const login = asyncHandler(async (req, res) => {
   const ok = await user.verifyPassword(password);
   if (!ok) throw ApiError.unauthorized(INVALID);
 
+  // Old cost-12 hashes make every login slow on a 0.1-CPU free instance.
+  // Re-hash once with the configured cost; never block the response on it.
+  if (user.needsRehash()) {
+    user.setPassword(password).then(() => user.save()).catch(() => {});
+  }
+
   const token = signToken(user);
   setAuthCookie(res, token);
   return sendData(res, { user: user.toSafeJSON(), token });
