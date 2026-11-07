@@ -1,0 +1,239 @@
+SMILECARE DENTAL STUDIO — GOOGLE ANTIGRAVITY PROMPTS
+
+================================================================================
+PROMPT 01 — PROJECT SETUP & DESIGN SYSTEM
+
+Act as a senior React engineer, UI designer, accessibility engineer, and QA tester. We are building a fictional dental clinic site named SmileCare Dental Studio for a YouTube live AI-building lesson. Work incrementally: implement ONLY the requested scope in each prompt; do not rewrite finished sections.
+
+STACK: React, Vite, JavaScript, Tailwind CSS, React Router, lucide-react. No backend, database, authentication, or payments. Set up a clean src/components, src/pages, src/data, src/assets structure. Use shared data so service names are identical across pages.
+
+ROUTES: /, /about, /services, /doctors, /appointment, /contact. Implement real client-side routing. Use a shared Header and Footer and initial placeholder pages. All nav items link to real routes. Header: sticky white background, textual tooth logo + SmileCare, desktop nav Home/About/Services/Doctors/Contact, right-side teal Book Appointment CTA, functional mobile menu with close on navigation and Escape. Footer: brand description, quick links, service links, placeholder clinic contact information and copyright. Mark all information DEMO.
+
+DESIGN TOKENS: navy #102A43; deep navy #071D31; teal #13B8A6; pale teal #E8F8F5; off-white #F7FAFC; text #526477; borders #E4EBF0. Plus Jakarta Sans headings, Inter body with system fallbacks. Max container width 1200px; desktop side padding 48px; tablet 32px; mobile 20px. Sections 96px vertical desktop and 64px mobile. Card radius 20px, buttons 12px, min touch height 44px. Use responsive fluid type, clear hierarchy, restrained shadows, good contrast and focus states. Avoid generic gradients and excessive animation.
+
+CONTENT / SAFETY: Entire clinic is fictional. No real doctor credentials, invented verified reviews, fabricated awards or patient outcome guarantees. Make demos clearly identifiable, including placeholder phone/address/email. No accidental use of real WhatsApp numbers. Make realistic but honest placeholder content.
+
+PERFORMANCE: No heavy animation dependencies; use local fallback styles if external images fail. Use semantic HTML, descriptive alt text, accessible labels and reduced-motion support.
+
+EXECUTION: Initialize app, install dependencies, implement design system, Header/Footer/routes, start dev server, check build and browser for errors. Do NOT build detailed page content yet. Report created routes and any problems.
+================================================================================
+
+================================================================================
+PROMPT 02 — HOME HERO SECTION
+
+Build ONLY the hero of the existing homepage. Keep Header, Footer, routes and design tokens unchanged.
+
+Desktop: full-width off-white #F7FAFC section, max-width 1200px centered container, min-height around 640px, grid left 54% and right 46% with 60px visual gap; vertically center. Use responsive CSS that never causes overflow.
+
+LEFT: Pale-teal pill label “YOUR SMILE, OUR PRIORITY” 12px bold teal uppercase. Main h1 exactly two lines: “Healthy Smiles.” and “Confident Lives.” with the second line teal. Desktop heading ~64px / 1.1 line-height, weight 800, -0.035em tracking; mobile ~38px. Body: “Experience gentle, modern dental care designed around your comfort. From routine checkups to smile transformations, we’re here for every step of your journey.” Body ~17px/1.75, max 520px. CTA row: primary filled teal “Book an Appointment” + arrow -> /appointment; secondary outlined “Explore Our Services” -> /services. Below: three compact icon-and-label points “Personalized Care”, “Modern Technology”, “Comfort-First Approach”; these are principles, not medically verified outcomes.
+
+RIGHT: prominent premium modern clinic or smiling adult photograph, portrait crop ~4:5, rounded 28px; fallback if it cannot load. Subtle decorative pale-teal ellipse BEHIND photo only. Floating white card at image bottom-left: tooth icon, “Gentle Dental Care” and “Made for Your Comfort”; soft shadow, high contrast. Do not fake medical qualifications.
+
+MOBILE <768px: text first then image, single column, 20px side padding, buttons stack if needed, no clipping or horizontal scroll; floating card stays in bounds. Add minimal entrance transition and reduced-motion fallback. Test at widths 1440px, 768px, 390px. Complete ONLY hero and verify buttons.
+================================================================================
+
+================================================================================
+PROMPT 03 — HOME SERVICES SECTION
+
+Implement ONLY a new home Services section immediately after Hero; preserve all earlier content.
+
+Style: white background, 96px top/bottom desktop, 64px mobile, centered 1200px container. Intro eyebrow “OUR SERVICES”, navy h2 “Complete Dental Care Under One Roof” (~42px desktop, 30px mobile), muted subtitle “Explore treatments and preventive care designed for different dental needs.”
+
+Cards: 3 columns desktop, 2 tablet, 1 mobile; 24px gaps, equal heights. Each card white with 1px #E4EBF0 border, 20px radius, 32px padding, 60px pale-teal icon square with an appropriate lucide icon, 20px bold title, 15px/1.65 description, bottom teal Learn More link -> /services. Hover lift no more than 5px, light shadow/border shift; keyboard focus visible.
+
+Six cards EXACTLY:
+1 General Dentistry — “Routine checkups, cleanings, and preventive dental care.”
+2 Teeth Whitening — “Professional whitening options to refresh your smile.”
+3 Dental Implants — “Restorative consultations for replacing missing teeth.”
+4 Orthodontics — “Alignment consultations and treatment options for different ages.”
+5 Root Canal Care — “Assessment and care options for affected teeth.”
+6 Pediatric Dentistry — “Comfortable dental care designed for younger patients.”
+
+Footer of section: outlined centered “View All Services” button -> /services. Use shared service definitions in src/data/services.js if helpful, to prevent inconsistency. Do not change Hero or build other sections. Verify cards and links at mobile/tablet/desktop widths.
+================================================================================
+
+================================================================================
+PROMPT 04 — HOME WHY CHOOSE US
+
+Add ONLY the “Why Choose SmileCare” section after home Services. Do not modify existing sections.
+
+Background #F7FAFC; 1200px max width; 100px vertical padding desktop. Two columns left 48% image, right 52% copy with 72px visual gap. Left: high-quality illustrative photo of dentist consulting with patient or modern clinic, large portrait shape, 24px rounded corners, object-fit cover, fallback if broken. Floating white callout staying inside image bounds with shield-check icon, headline “Care You Can Feel”, small “Every Visit Matters”.
+
+Right: eyebrow “WHY CHOOSE SMILECARE”; navy h2 “Modern Dentistry With a Human Touch”; body “We believe that great dental care begins with understanding your needs. Our approach focuses on communication, comfort, and personalized attention.” Three feature rows with teal lucide icon in pale teal 48px rounded tile, navy title and concise muted text:
+1 “Patient-First Approach” — “We take time to listen to your needs and concerns.”
+2 “Clear Treatment Guidance” — “Understand your care options before making decisions.”
+3 “Comfortable Environment” — “A welcoming setting for every visit.”
+
+CTA “Learn More About Us” -> /about. Mobile: image above copy, full-width within 20px side gutters. No fabricated clinical claims. Verify spacing/responsive alignment.
+================================================================================
+
+================================================================================
+PROMPT 05 — HOME TEAM PREVIEW
+
+Add ONLY the “Meet Our Team” section after Why Choose Us. Preserve existing UI and routing.
+
+White background, 96px desktop vertical padding. Center heading: eyebrow “MEET OUR TEAM”, h2 “Caring Professionals, Confident Smiles”, subtitle “Explore sample profiles of the people behind our demo clinic.” Add unobtrusive but clearly legible label “Fictional demo profiles — not real clinicians”.
+
+3 equal-height cards, 3 columns desktop, 1 mobile, 24px gap. Each has consistent illustrative portrait/clinic-themed stock image aspect 4:5, rounded top corners, fallback placeholder, white body, soft shadow, 22px name, teal specialty, short 15px bio, link “View Profile” -> /doctors.
+
+Fictional profiles:
+Dr. Aanya Mehta — General Dentistry — “Focused on preventive care and clear communication.”
+Dr. Rohan Shah — Orthodontic Care — “Interested in personalized alignment consultations.”
+Dr. Neha Kapoor — Pediatric Dental Care — “Focused on creating welcoming visits for children.”
+
+Do not assert real licenses, years of experience, qualifications, certifications or patient results. Add centered “Meet Our Team” -> /doctors under cards. Subtle lift-on-hover, strong keyboard focus, mobile no horizontal scroll. Implement and test only this section.
+================================================================================
+
+================================================================================
+PROMPT 06 — HOME PATIENT EXPERIENCE + FINAL CTA
+
+Finish the homepage with these TWO sections, appended after home Team. Do not rebuild other sections.
+
+A — “PATIENT EXPERIENCE” section: pale teal #E8F8F5 background, 96px desktop vertical padding, centered eyebrow, navy heading “A Better Dental Visit Begins With Trust”, explanatory subtitle “Examples of the thoughtful experience our demo clinic aims to provide.” 3 white cards in responsive grid, 20px radius, 28px padding, subtle quote icon, soft shadow. Place explicit label ON EACH card “Illustrative example — not an actual patient review”. Do NOT invent real reviewer names, star ratings, verified testimonials or outcomes.
+
+Cards’ text:
+1 “Taking time to explain each step can make dental visits easier to understand.”
+2 “A welcoming clinic atmosphere can help patients feel more comfortable.”
+3 “Clear appointment information helps people plan their visit with confidence.”
+
+B — final CTA: dark navy #071D31 inset panel, large rounded 28px corners, subtle teal decorative shapes without interfering with text, centered white heading “Your Healthier Smile Starts Here”, supportive body “Ready to explore dental care options? Our team is here to help you take the next step.” White primary CTA “Request an Appointment” -> /appointment; secondary outlined / text “Contact Us” -> /contact.
+
+Mobile: no off-screen decoration, button stack, readable contrast, responsive heading. Verify full homepage links, images and layout at 390px and 1440px.
+================================================================================
+
+================================================================================
+PROMPT 07 — COMPLETE ABOUT US PAGE
+
+Build the full About Us route /about. Keep global Header/Footer and all homepage content unchanged. Reuse the existing design system and spacing.
+
+SECTION 1 HERO: light teal background, breadcrumb “Home / About Us” with Home linked to /, eyebrow “GET TO KNOW US”, h1 “Care That Puts People First”, subtitle “Discover our patient-focused philosophy and approach to modern dental care.” Centered content, around 300px desktop hero height and compact mobile layout.
+
+SECTION 2 OUR STORY: white, generous padding, 2-column desktop (photo left, copy right) and stacked mobile. Clinic photograph with rounded 24px image. Eyebrow “OUR STORY”; heading “A More Comfortable Approach to Dentistry”; two thoughtful paragraphs about an imaginary clinic that prioritizes listening, clear explanations, a friendly atmosphere, and personalized care choices. Do not invent founding dates, number of patients, medical credentials, awards or outcomes.
+
+SECTION 3 VALUES: centered heading “What Matters Most to Us”; 3 responsive icon cards with navy headings, pale-teal icon tiles and concise copy: “Compassionate Care”, “Clear Communication”, “Modern Thinking”. 20px radii, 24px gaps.
+
+SECTION 4 PROCESS: soft gray background, heading “Your Care, Step by Step”; 3 numbered connected steps horizontally on desktop and stacked mobile: “01 Listen & Understand”, “02 Explain Your Options”, “03 Plan Your Care”, each with 1-2 sentences; describe a process, not promises of medical results.
+
+SECTION 5 CTA: dark navy rounded panel, headline “Let’s Take the Next Step Together”, body inviting an inquiry, teal or white “Request an Appointment” -> /appointment.
+
+Polish typography, adequate contrast, image fallback, mobile responsiveness, alt text, keyboard-accessible links. Verify /about and preserve other pages.
+================================================================================
+
+================================================================================
+PROMPT 08 — COMPLETE SERVICES PAGE
+
+Build the full /services page using the shared visual system. Do not alter the homepage.
+
+HERO: pale teal banner; linked breadcrumb “Home / Services”; eyebrow “OUR SERVICES”; h1 “Comprehensive Care for Every Smile”; subtitle “Discover dental treatment options and explore the next step for your oral health.”
+
+MAIN: six detailed alternating feature rows; desktop image/text split ~45%/55%, swap sides on alternate rows, mobile image above content. Each row has an appropriate high-quality illustrative image with fallback, 24px radius, service name, short careful description, 3 concise feature chips with check icons, CTA “Request Consultation” -> /appointment?service=<URL_ENCODED_SERVICE_NAME>.
+
+1 General Dentistry: “Preventive examinations, professional cleaning consultations, and everyday dental care.” Chips: Routine Checkups / Cleaning / Preventive Guidance.
+2 Teeth Whitening: “Explore professional whitening options with a dentist.” Chips: Smile Assessment / Whitening Options / Aftercare Guidance.
+3 Dental Implants: “Discuss restorative options for missing teeth with a dental professional.” Chips: Initial Assessment / Treatment Planning / Follow-Up Care.
+4 Orthodontics: “Learn about braces and alignment options suited to individual needs.” Chips: Alignment Assessment / Braces / Care Planning.
+5 Root Canal Care: “Learn about assessment and possible care options for affected teeth.” Chips: Tooth Evaluation / Treatment Discussion / Follow-Up.
+6 Pediatric Dentistry: “Explore gentle, age-appropriate dental care for children.” Chips: Routine Checkups / Preventive Guidance / Child-Friendly Visits.
+
+FAQ section on subtle off-white background with accessible disclosure/accordion controls (real functional state, keyboard-friendly, only one open at a time is fine):
+- “How do I know which dental service I need?”
+- “Can I request an appointment online?”
+- “Do I need a consultation before treatment?”
+- “How can I learn about treatment costs?”
+Answers must avoid diagnosing or claiming confirmed bookings.
+
+FINAL CTA: “Not Sure Where to Start?” and “Talk to Our Team” -> /contact.
+
+Use shared services data, ensure query parameter exactly matches service dropdown in Appointment page. No fabricated prices, guarantees, qualifications, or outcomes. Verify every link, accordion, mobile behavior.
+================================================================================
+
+================================================================================
+PROMPT 09 — COMPLETE OUR DOCTORS PAGE
+
+Build the full /doctors page. Do not alter other pages or global design.
+
+HERO: pale teal, linked breadcrumb “Home / Our Doctors”, eyebrow “OUR TEAM”, h1 “Meet the People Behind Your Smile”, subtitle “Explore illustrative care-team profiles for our demonstration clinic.” Show visible notice “All profiles on this page are fictional examples, not real practicing clinicians.”
+
+TEAM: three premium portrait cards matching the homepage preview. Use an illustrative stock portrait or a neutral photo placeholder; do not assert image subject is a named actual professional. 4:5 image ratio; 20px card radius; soft shadow; well-spaced white card body; navy name, teal role, clear short bio, CTA “Request Consultation” -> /appointment.
+
+Profile 1: Dr. Aanya Mehta — General Dentistry — “An example profile focused on preventive care, patient education, and straightforward communication.”
+Profile 2: Dr. Rohan Shah — Orthodontic Care — “An example profile introducing consultations about alignment options and care planning.”
+Profile 3: Dr. Neha Kapoor — Pediatric Dental Care — “An example profile emphasizing supportive visits and age-appropriate dental guidance.”
+
+PHILOSOPHY: off-white full-width section with clinic illustration and content: heading “Care Starts With Understanding You”, copy about listening, clear questions, discussing care options. Avoid claims of treatment effectiveness.
+
+CTA: dark navy inset banner “Have a Question for Our Team?” -> /contact.
+
+Respect responsive 3/2/1 grid rules as fits width, accessible buttons, consistent typography, verify navigation and image handling.
+================================================================================
+
+================================================================================
+PROMPT 10 — FUNCTIONAL APPOINTMENT REQUEST PAGE
+
+Build /appointment as a premium form that genuinely prepares an appointment INQUIRY. There is no backend or scheduling engine: it must NEVER say a visit or time slot is confirmed.
+
+HERO: pale teal, “Home / Book Appointment” breadcrumb, h1 “Request Your Appointment”, supportive subtitle “Share your details and prepare a message for the clinic.”
+
+LAYOUT: max 1200px, 2 columns desktop 65% form / 35% information, 30px gap; mobile single column. Form white 20px radius, 40px desktop and 24px mobile padding, subtle border/shadow. Native semantic form, clear labels and descriptions, clear error messages connected by aria-describedby, visible focus ring, 48px inputs.
+
+FIELDS:
+- Full name (required, trim whitespace; min 2 chars)
+- Mobile number (required; Indian 10 digits; explain accepted format and reject invalid characters)
+- Email (optional; format check if provided)
+- Service select (required): General Dentistry, Teeth Whitening, Dental Implants, Orthodontics, Root Canal Care, Pediatric Dentistry, Not Sure
+- Preferred date (required; cannot be in past based on local date; no assertion of availability)
+- Preferred time window (required): 9 AM–12 PM, 12 PM–4 PM, 4 PM–7 PM
+- Additional message (optional; max 500 chars)
+- Required explicit checkbox: “I agree to share my information for an appointment inquiry.”
+
+Preselect the service if a matching ?service= parameter exists; ignore invalid parameters gracefully. Use React controlled state and meaningful validation. Submit button “Prepare WhatsApp Request”. Build an encoded text summary from form values: full name, phone, optional email, service, preferred date/time and optional message. In source config, use DEMO_WHATSAPP_NUMBER = '' by default. If a genuine business WhatsApp number has NOT been configured, NEVER create a wa.me link to a random number and NEVER pretend to submit: display a formatted preview and working “Copy Message” button with confirmation after successful clipboard action. If a real number has been configured by the site owner, create a clickable WhatsApp deep link with encodeURIComponent(message) and explain that the user must send the prepared message inside WhatsApp. No storage, no invented availability, no network submission to a fake API.
+
+RIGHT SIDEBAR: “Before Your Visit”, 3 illustrated steps (Choose Service, Share Details, Send Inquiry), labelled “Example clinic hours”, and a short note “Preferred times are requests only.” Do not show a fake location or phone number.
+
+TEST: empty form, invalid phone/email, invalid date, consent unchecked, service preselection from /services, successful preview/copy, narrow screen layout. Report what works and any still-configurable settings.
+================================================================================
+
+================================================================================
+PROMPT 11 — COMPLETE CONTACT US PAGE
+
+Build complete /contact using global Header, Footer and tokens. Do not change earlier pages.
+
+HERO: pale teal with breadcrumb “Home / Contact”, eyebrow “CONTACT US”, h1 “We’re Here to Help”, subtitle “Have a question about our services? Reach out and explore the next step.”
+
+CONTACT CARDS: 3 responsive cards on white backgrounds, light border, 20px radius, icon tile, generous spacing and gentle hover.
+1 Call Our Clinic — show “Demo phone — add real number”. Do not make a fake number clickable.
+2 Send an Email — show “hello@smilecare.example (demo address)”.
+3 Find Our Clinic — show “Demo location — add actual clinic address”.
+
+CONTACT FORM: two-column layout with left main form / right info panel. White form card with semantic labels and inline errors. Required name, required email, optional phone, required subject, required message, required consent checkbox “I agree to prepare and share this inquiry”. Button “Prepare Message”. On valid submit show actual formatted message preview with functioning Copy Message action (with clipboard error fallback); optional mailto link using demo address with clear warning it needs a real address to deliver. NEVER claim email sent or message delivered without real service integration. Do not send or store user content through unknown endpoint.
+
+LOCATION PANEL: aesthetically pleasing map-like graphic placeholder with clear text “Connect the business’s actual Google Maps location here”; do not embed an unrelated real map. Under it list “Example opening hours — replace before launch.”
+
+FAQ: 3 accessible accordion entries: “How can I contact the clinic?”, “Can I request an appointment online?”, “Where can I find treatment information?” Keep truthful distinction between inquiry and confirmation.
+
+FINAL CTA: dark navy banner “Ready to Plan Your Visit?” + button “Request an Appointment” -> /appointment.
+
+Verify all card/text contrast, form validation, preview/copy, FAQ interactions, mobile responsiveness and functioning route links.
+================================================================================
+
+================================================================================
+PROMPT 12 — FINAL QA, POLISH, & DEPLOYMENT HANDOFF
+
+Act as a senior frontend QA engineer. Polish and verify the completed SmileCare demonstration website WITHOUT wholesale redesign or deleting existing content.
+
+ROUTES: /, /about, /services, /doctors, /appointment, /contact. Open or test each route directly. Check refresh behavior when served as a React SPA. Verify header, footer, desktop nav, mobile hamburger and Escape dismissal, active nav, every CTA, section links and service query preselection.
+
+RESPONSIVE TEST MATRIX: 390px, 768px, 1024px, 1440px. Check horizontal overflow, card alignment, button sizes, line wrapping, image crops, overlays, nav, form inputs. Fix actual failures. Keep design tokens consistent.
+
+FUNCTION TESTS: invalid and valid appointment entries; selected services; date validation; consent; WhatsApp preview/copy fallback; contact form validation and preview/copy; FAQ accordion state; browser back/forward; loading/broken image fallback. Never claim booking, message delivery, or appointment availability confirmed.
+
+ACCESSIBILITY: semantic sections/headings, meaningful alt text, accessible form errors, keyboard navigation and focus visibility, contrast, aria-expanded for toggles, reduced motion support.
+
+PERFORMANCE/SEO: set title “SmileCare Dental Studio | Modern Dental Care”; descriptive page-level meta descriptions where feasible; favicon; responsive images and loading=lazy below fold; no massive libraries; fix console warnings; production npm run build passes.
+
+DEMO ACCURACY: ensure all invented clinician names and feedback are visibly examples; no fabricated testimonials, certifications or stats. Placeholder contact details should be explicitly DEMO and no real phone numbers should be invented.
+
+DEPLOYMENT: explain commands to run locally and make a production build. If deployment is not configured, provide exact simple steps for an appropriate static host (e.g. Vercel) including SPA routing fallback. Do not claim website is deployed or publicly online unless an actual public URL has been verified.
+
+FINISH: Short status report: pages implemented; links/forms/tests actually checked; problems fixed; missing configuration for a real clinic; deployment instructions. Do not claim tests that were not executed.
+================================================================================
