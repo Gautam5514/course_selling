@@ -254,13 +254,16 @@ export default function FeaturedCourses() {
                     <span>{card.category}</span>
                   </span>
 
-                  <LikeButton
-                    likes={isUnavailable(card.id) ? null : cardStats(card.id)?.likes ?? null}
-                    liked={cardStats(card.id)?.liked ?? false}
-                    onToggle={() => handleLike(card)}
-                    readOnly={!user}
-                    variant="badge"
-                  />
+                  <span className="flex items-center gap-1.5">
+                    <RatingBadge variant="compact" value={cardStats(card.id)?.rating ?? null} count={cardStats(card.id)?.ratingCount ?? 0} loading={stats === null} unavailable={isUnavailable(card.id)} />
+                    <LikeButton
+                      likes={isUnavailable(card.id) ? null : cardStats(card.id)?.likes ?? null}
+                      liked={cardStats(card.id)?.liked ?? false}
+                      onToggle={() => handleLike(card)}
+                      readOnly={!user}
+                      variant="badge"
+                    />
+                  </span>
                 </div>
 
                 <h3 className="text-xl sm:text-2xl font-extrabold text-[#111827] group-hover:text-[#f3843f] transition-colors leading-tight">
@@ -280,8 +283,6 @@ export default function FeaturedCourses() {
                     <span>{card.projectBadge}</span>
                   </span>
 
-                  {/* Ratings come from the review form on the reader page. */}
-                  <RatingBadge className="ml-auto" value={cardStats(card.id)?.rating ?? null} count={cardStats(card.id)?.ratingCount ?? 0} loading={stats === null} unavailable={isUnavailable(card.id)} />
                 </div>
               </div>
 
