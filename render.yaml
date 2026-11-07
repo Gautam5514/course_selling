@@ -1,0 +1,48 @@
+# Render Blueprint for the API (https://render.com/docs/blueprint-spec).
+# In Render: New → Blueprint → pick this repo. Render reads this file, creates
+# the web service from ./backend and asks for the secret values below.
+services:
+  - type: web
+    name: course-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # Your Vercel URL(s), comma separated, no trailing slash.
+      - key: CORS_ORIGINS
+        sync: false
+      # MongoDB Atlas connection string.
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: COOKIE_SAME_SITE
+        value: none
+      - key: OWNER_EMAIL
+        sync: false
+      - key: OWNER_PASSWORD
+        sync: false
+      - key: OWNER_NAME
+        value: Gautam
+      - key: OWNER_SYNC_PASSWORD
+        value: "false"
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: CLOUDINARY_FOLDER
+        value: hellos
+      - key: APP_TIMEZONE
+        value: Asia/Kolkata

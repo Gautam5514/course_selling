@@ -15,16 +15,21 @@ export function verifyToken(token) {
 
 const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
-export function setAuthCookie(res, token) {
-  res.cookie(config.authCookieName, token, {
+function cookieOptions() {
+  const sameSite = config.cookieSameSite;
+  return {
     httpOnly: true,
-    secure: config.cookieSecure,
-    sameSite: 'lax',
-    maxAge: COOKIE_MAX_AGE_MS,
+    // SameSite=None is rejected by browsers unless the cookie is also Secure.
+    secure: config.cookieSecure || sameSite === 'none',
+    sameSite,
     path: '/',
-  });
+  };
+}
+
+export function setAuthCookie(res, token) {
+  res.cookie(config.authCookieName, token, { ...cookieOptions(), maxAge: COOKIE_MAX_AGE_MS });
 }
 
 export function clearAuthCookie(res) {
-  res.clearCookie(config.authCookieName, { path: '/' });
+  res.clearCookie(config.authCookieName, cookieOptions());
 }

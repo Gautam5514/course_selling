@@ -46,6 +46,10 @@ export const config = {
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '7d',
   authCookieName: process.env.AUTH_COOKIE_NAME ?? 'course_token',
   cookieSecure: bool('COOKIE_SECURE', isProd),
+  // Frontend and API usually live on different domains in production
+  // (e.g. vercel.app + onrender.com), so the auth cookie must be SameSite=None
+  // (which browsers only accept together with Secure). Locally 'lax' is fine.
+  cookieSameSite: (process.env.COOKIE_SAME_SITE || (isProd ? 'none' : 'lax')).toLowerCase(),
 
   // The site administrator. Created (or promoted) automatically on boot.
   owner: {

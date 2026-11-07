@@ -109,7 +109,7 @@ export default function Hero() {
             </span>
             <br />
             <span className="sm:whitespace-nowrap">
-              the way it's{" "}
+              the way it&apos;s{" "}
               <span className="relative inline-block">
                 <span className="text-emerald-300">meant to be</span>
                 <span className="absolute -bottom-1 sm:-bottom-1.5 left-0 w-full pointer-events-none">
