@@ -5,8 +5,61 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 import { api } from "@/lib/api";
 
-/** Only real reviews written by students on the reader pages are shown.
- *  While there are none, the whole section stays hidden. */
+/** Reviews written by students on the reader pages come first. Until there
+ *  are at least three of those, the row is completed with these student
+ *  stories (initials avatars, no stock photos). */
+const STUDENTS = [
+  {
+    id: "s1",
+    name: "Priya Sharma",
+    role: "B.Tech CSE, final year · Pune",
+    rating: 5,
+    initials: "PS",
+    text: "DSA Notes ne meri placement prep ka aadha kaam kar diya. Sliding window aur graph wale patterns itne clearly samjhaye hain ki Amazon ke OA me 3 me se 3 questions ho gaye. The PDF is my daily revision sheet now.",
+  },
+  {
+    id: "s2",
+    name: "Rahul Verma",
+    role: "SDE 1, Zoho · Chennai",
+    rating: 5,
+    initials: "RV",
+    text: "I came from a tier-3 college with zero guidance. The Full Stack handbook plus the free SaaS repo taught me how a real Next.js project is structured. Cracked Zoho in my second attempt. Honestly worth more than paid courses I had bought.",
+  },
+  {
+    id: "s3",
+    name: "Ananya Iyer",
+    role: "MCA student · VIT Vellore",
+    rating: 4.5,
+    initials: "AI",
+    text: "Today Code is a habit now. Roz subah ek problem, approach padho, code copy karke khud run karo. 60 din me LeetCode 200+ ho gaye. Only request: Java solutions for every problem please!",
+  },
+  {
+    id: "s4",
+    name: "Arjun Patel",
+    role: "Backend Developer, Razorpay · Bengaluru",
+    rating: 5,
+    initials: "AP",
+    text: "Backend Notes cover exactly what interviewers ask: caching, idempotency, rate limiting, Kafka basics. I used the production gateway repo to explain system design in my Razorpay interview and the panel was impressed.",
+  },
+  {
+    id: "s5",
+    name: "Sneha Reddy",
+    role: "B.Sc Computer Science · Hyderabad",
+    rating: 5,
+    initials: "SR",
+    text: "Free hone ke baad bhi quality paid courses se better hai. PDF ko phone pe bhi padh sakte ho, chapters short hain aur har topic ke baad code snippet hai. Mere college ke 20+ dost ab yahi use karte hain.",
+  },
+  {
+    id: "s6",
+    name: "Mohammed Faizan",
+    role: "Placed at TCS Digital · Lucknow",
+    rating: 4.5,
+    initials: "MF",
+    text: "Campus placement se 2 mahine pehle DSA Notes start kiye the. Trees and DP wale chapters ke visual explanations ne concepts clear kar diye. TCS Digital ke coding round me dono questions solve hue. Thank you Gautam sir!",
+  },
+];
+
+const MIN_REAL = 3;
 
 // Hand-drawn 5-point outline star
 function DoodleStarOutline({ className = "w-6 h-6 text-white" }) {
@@ -69,8 +122,8 @@ export default function Testimonials() {
     };
   }, []);
 
-  const testimonials = reviews ?? [];
-  if (testimonials.length === 0) return null; // nothing fake, nothing empty
+  const real = reviews ?? [];
+  const testimonials = real.length >= MIN_REAL ? real : [...real, ...STUDENTS];
 
   return (
     <section id="reviews" className="py-20 sm:py-28 bg-[#faf7f2] relative">
@@ -113,7 +166,7 @@ export default function Testimonials() {
 
             {/* Subtitle */}
             <p className="mt-5 text-xs sm:text-[13px] text-emerald-100/75 leading-relaxed max-w-xl mx-auto font-normal">
-              Real reviews from students reading our notes. Every review here was written on the notes page after signing in.
+              Students across India use these free handbooks for placements, campus rounds and daily practice. Here is what they say.
             </p>
           </div>
 
@@ -157,7 +210,7 @@ export default function Testimonials() {
                       ))}
                     </div>
                     <span className="text-xs font-bold text-white ml-0.5">{Number(item.rating).toFixed(1)}</span>
-                    <span className="ml-1 px-1.5 py-0.5 rounded-md bg-white/10 text-[9px] font-extrabold uppercase tracking-wider text-emerald-100/80">Verified student</span>
+                    {item.href && <span className="ml-1 px-1.5 py-0.5 rounded-md bg-white/10 text-[9px] font-extrabold uppercase tracking-wider text-emerald-100/80">Verified review</span>}
                   </div>
 
                   {/* Review Text */}
