@@ -36,7 +36,7 @@ export default function RefundContent() {
           </h1>
 
           <p className="mt-4 text-sm sm:text-base text-emerald-100/80 max-w-2xl mx-auto leading-relaxed">
-            helloS is an entirely free open-access platform. We do not charge tuition fees, subscriptions, or membership costs.
+            Gopo Workspace is an entirely free open-access platform. We do not charge tuition fees, subscriptions, or membership costs.
             All technical PDF handbooks and production projects are free for all developers.
           </p>
         </div>
@@ -93,7 +93,7 @@ export default function RefundContent() {
             <li className="flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <span>
-                <strong>Zero Financial Transactions:</strong> helloS currently processes no credit cards, debit cards, PayPal, or bank transfers.
+                <strong>Zero Financial Transactions:</strong> Gopo Workspace currently processes no credit cards, debit cards, PayPal, or bank transfers.
               </span>
             </li>
             <li className="flex items-start gap-2.5">

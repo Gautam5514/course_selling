@@ -55,7 +55,7 @@ export default function AboutMission() {
             Our Core <span className="text-[#f3843f]">Principles</span>
           </h2>
           <p className="mt-3 text-sm text-stone-600 leading-relaxed">
-            The foundation of everything we build, design, and teach at helloS.
+            The foundation of everything we build, design, and teach at Gopo Workspace.
           </p>
         </div>
 

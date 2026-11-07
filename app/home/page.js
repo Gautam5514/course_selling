@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import HomePageContent from "@/components/home/HomePageContent";
 
 export const metadata = {
-  title: "helloS — Unlock Your Potential with Expert-Led Courses",
+  title: "Gopo Workspace — Unlock Your Potential with Expert-Led Courses",
   description:
     "Master in-demand skills from top industry professionals. Join real-time virtual classrooms, earn recognized certificates, and take your career journey to new heights with confidence.",
 };

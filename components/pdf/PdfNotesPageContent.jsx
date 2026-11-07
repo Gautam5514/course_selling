@@ -14,13 +14,21 @@ import {
 } from "lucide-react";
 import { pdfCategories, pdfNotesList } from "@/data/pdfNotesData";
 import LikeButton from "@/components/LikeButton";
-import PdfPreviewModal from "@/components/PdfPreviewModal";
+import { useRouter } from "next/navigation";
+import { useAuth, loginHref } from "@/components/AuthProvider";
 
 export default function PdfNotesPageContent() {
   const [activeCategory, setActiveCategory] = useState("All Notes");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("likes"); // "likes" | "pages" | "title"
-  const [selectedPdf, setSelectedPdf] = useState(null);
+  const router = useRouter();
+  const { user } = useAuth();
+
+  // Read Online → dedicated page; logged-out visitors sign in first and return.
+  const openReader = (pdf) => {
+    const href = `/pdf/${pdf.id}`;
+    router.push(user ? href : loginHref(href));
+  };
 
   const filteredPdfs = pdfNotesList
     .filter((pdf) => {
@@ -43,9 +51,9 @@ export default function PdfNotesPageContent() {
     const docTitle = pdf.title || "Handbook";
     const content = `================================================================================
 ${docTitle.toUpperCase()}
-Author: ${pdf.author || "helloS Engineering"}
+Author: ${pdf.author || "Gopo Workspace Engineering"}
 Category: ${pdf.category} | ${pdf.pages} Pages | ${pdf.fileSize}
-Platform: helloS Open Education & Project Hub (100% Free)
+Platform: Gopo Workspace Open Education & Project Hub (100% Free)
 ================================================================================
 
 OVERVIEW:
@@ -204,7 +212,7 @@ KEY TAKEAWAYS & PRODUCTION CHECKLIST:
               {/* Card Bottom Actions */}
               <div className="p-6 pt-3 bg-[#fdfbf7] border-t border-stone-100 flex items-center gap-2">
                 <button
-                  onClick={() => setSelectedPdf(pdf)}
+                  onClick={() => openReader(pdf)}
                   className="flex-1 py-2.5 rounded-xl text-xs font-bold text-stone-800 bg-white hover:bg-stone-50 border border-stone-200 transition-colors flex items-center justify-center gap-1.5 active:scale-95 shadow-xs"
                 >
                   <BookOpen className="w-3.5 h-3.5 text-[#093c33]" />
@@ -245,11 +253,6 @@ KEY TAKEAWAYS & PRODUCTION CHECKLIST:
       </div>
 
       {/* READ ONLINE MODAL */}
-      <PdfPreviewModal
-        pdf={selectedPdf}
-        isOpen={Boolean(selectedPdf)}
-        onClose={() => setSelectedPdf(null)}
-      />
     </div>
   );
 }

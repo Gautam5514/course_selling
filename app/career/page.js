@@ -6,7 +6,7 @@ import CareerOpenings from "@/components/career/CareerOpenings";
 import CareerCulture from "@/components/career/CareerCulture";
 
 export const metadata = {
-  title: "Careers at helloS — Build the Future of Learning",
+  title: "Careers at Gopo Workspace — Build the Future of Learning",
   description:
     "Join our remote-first team across 18 countries. Explore open roles in engineering, product design, curriculum, and marketing with competitive salary and equity.",
 };

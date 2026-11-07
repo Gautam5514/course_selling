@@ -48,7 +48,7 @@ export default function AboutHero() {
 
         {/* Subtitle */}
         <p className="mt-7 text-base sm:text-lg text-emerald-100/75 max-w-2xl leading-relaxed">
-          We founded helloS to replace passive video lectures with live, interactive mentorship and project-based apprenticeship that actually turns curious learners into hired professionals.
+          We founded Gopo Workspace to replace passive video lectures with live, interactive mentorship and project-based apprenticeship that actually turns curious learners into hired professionals.
         </p>
 
         {/* Stats Grid */}

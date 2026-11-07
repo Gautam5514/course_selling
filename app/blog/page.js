@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import BlogPageContent from "@/components/blog/BlogPageContent";
 
 export const metadata = {
-  title: "Blog & Insights — helloS | Engineering, Design & Career Guides",
+  title: "Blog & Insights — Gopo Workspace | Engineering, Design & Career Guides",
   description:
     "Explore in-depth tutorials, system architecture deep dives, product design strategies, and career blueprints from industry leads.",
 };

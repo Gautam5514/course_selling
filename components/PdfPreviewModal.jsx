@@ -28,9 +28,9 @@ export default function PdfPreviewModal({ pdf, isOpen, onClose }) {
     const docTitle = pdf.title || "Handbook";
     const content = `================================================================================
 ${docTitle.toUpperCase()}
-Author: ${pdf.author || "helloS Engineering"}
+Author: ${pdf.author || "Gopo Workspace Engineering"}
 Category: ${pdf.category} | ${pdf.pages} Pages | ${pdf.fileSize}
-Platform: helloS Open Education & Project Hub (100% Free)
+Platform: Gopo Workspace Open Education & Project Hub (100% Free)
 ================================================================================
 
 OVERVIEW:

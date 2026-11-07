@@ -19,6 +19,10 @@ const ROTATING_WORDS = [
   { text: "AI/ML", color: "#7ee0c3" },
 ];
 
+/* Hero video: YouTube embed (thumbnail stays as the cover until play) */
+const HERO_VIDEO_ID = "DKnGyNyzuK4";
+const HERO_VIDEO_EMBED = `https://www.youtube-nocookie.com/embed/${HERO_VIDEO_ID}?autoplay=1&rel=0&modestbranding=1`;
+
 function RotatingWord() {
   const [index, setIndex] = useState(0);
   const [animState, setAnimState] = useState("in"); // "in" | "out"
@@ -60,6 +64,7 @@ function RotatingWord() {
 }
 
 export default function Hero() {
+  const [videoPlaying, setVideoPlaying] = useState(false);
   return (
     <section className="relative bg-[#0b382d] pt-6 sm:pt-8 text-white overflow-visible">
       {/* Background Subtle Grid Pattern */}
@@ -152,7 +157,7 @@ export default function Hero() {
                     <path d="M0 0L14 6L8 8L6 14L0 0Z" />
                   </svg>
                   <div className="bg-[#ea8a42] text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-md shadow-md mt-1">
-                    Sofia G.
+                    Gautam K.
                   </div>
                 </div>
               </div>
@@ -213,23 +218,36 @@ export default function Hero() {
         <div className="relative mt-14 sm:mt-16 w-full max-w-4xl -mb-40 sm:-mb-52 md:-mb-64 lg:-mb-72 z-30">
           <div className="relative rounded-[28px] sm:rounded-[36px] overflow-hidden p-2 sm:p-2.5 bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.35)] ring-1 ring-black/5">
             <div className="relative rounded-[22px] sm:rounded-[30px] overflow-hidden aspect-[16/10] sm:aspect-[16/9] w-full bg-slate-900 group">
-              <Image
-                src="/images/hero-students.jpg"
-                alt="Developers collaborating on open source projects and reading technical notes"
-                fill
-                priority
-                className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1100px"
-              />
+              {videoPlaying ? (
+                <iframe
+                  src={HERO_VIDEO_EMBED}
+                  title="Intro video"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full border-0"
+                />
+              ) : (
+                <>
+                  <Image
+                    src="/images/hero-students.jpg"
+                    alt="Developers collaborating on open source projects and reading technical notes"
+                    fill
+                    priority
+                    className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1100px"
+                  />
 
-              {/* Centered Circular Play / Video Button */}
-              <Link
-                href="/projects"
-                className="absolute inset-0 m-auto w-14 h-14 sm:w-18 sm:h-18 rounded-full bg-[#094e46]/90 hover:bg-[#ea8a42] text-white flex items-center justify-center backdrop-blur-md border-2 border-white/20 shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 group/btn"
-                aria-label="Play video"
-              >
-                <Play className="w-6 h-6 sm:w-7 sm:h-7 text-white fill-current ml-0.5" />
-              </Link>
+                  {/* Centered Circular Play / Video Button */}
+                  <button
+                    type="button"
+                    onClick={() => setVideoPlaying(true)}
+                    className="absolute inset-0 m-auto w-14 h-14 sm:w-18 sm:h-18 rounded-full bg-[#094e46]/90 hover:bg-[#ea8a42] text-white flex items-center justify-center backdrop-blur-md border-2 border-white/20 shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 group/btn cursor-pointer"
+                    aria-label="Play intro video"
+                  >
+                    <Play className="w-6 h-6 sm:w-7 sm:h-7 text-white fill-current ml-0.5" />
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import CoursesPageContent from "@/components/courses/CoursesPageContent";
 
 export const metadata = {
-  title: "Explore Courses & Career Tracks — helloS",
+  title: "Explore Courses & Career Tracks — Gopo Workspace",
   description:
     "Master in-demand tech skills from top industry practitioners. Browse our curated full-stack, AI, design, and DevOps courses.",
 };

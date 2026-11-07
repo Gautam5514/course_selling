@@ -80,3 +80,55 @@ npm run build
 ## Deployment
 
 The app can be deployed to any platform that supports Next.js. For Vercel, connect the repository and use the default Next.js build settings. For other platforms, see the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying).
+
+## Admin panel & roles
+
+The frontend ships an admin area at `/admin` (dashboard, notes & PDFs, accounts). It talks to the `/api/admin/*` routes below.
+
+| Role     | Can do                                                                 |
+|----------|------------------------------------------------------------------------|
+| `ADMIN`  | Everything: manage notes, upload files, change roles, remove accounts  |
+| `EDITOR` | Manage notes, PDFs, code snippets and downloads                        |
+| `VIEWER` | Student account created by sign-up; can read PDFs, like and rate       |
+
+**Admin account.** `OWNER_EMAIL` / `OWNER_PASSWORD` / `OWNER_NAME` in `.env` define the owner. On every boot
+`ensureOwner()` creates the account (or promotes an existing one to `ADMIN`). Outside production the password is
+re-synced from `.env` (`OWNER_SYNC_PASSWORD=true`), so a changed env can never lock you out. `npm run seed` also
+resets it.
+
+### Admin API (`ADMIN` or `EDITOR` unless noted)
+
+| Method | Path                                   | Body / query                                         | Notes |
+|--------|----------------------------------------|------------------------------------------------------|-------|
+| GET    | `/api/admin/dashboard`                 |                                                      | Counts, engagement totals, recent + top notes, storage |
+| GET    | `/api/admin/notes`                     | `?q&status=all\|published\|draft\|trash&category&page&limit` | Paginated; `meta.categories` lists known categories |
+| POST   | `/api/admin/notes`                     | note fields (see below)                              | Slug auto-generated from the title when omitted |
+| GET    | `/api/admin/notes/:id`                 |                                                      | Includes `file` (main PDF) and attachment metadata |
+| PATCH  | `/api/admin/notes/:id`                 | any note fields, `publish: true\|false`               | `publish` toggles visibility + `publishedAt` |
+| PATCH  | `/api/admin/notes/order`               | `{ order: [{ id, order }] }`                         | Manual home-page ordering |
+| DELETE | `/api/admin/notes/:id`                 |                                                      | Soft delete (trash) |
+| POST   | `/api/admin/notes/:id/restore`         |                                                      | Restore from trash |
+| POST   | `/api/admin/notes/:id/files?role=`     | multipart `file`; `role=primary\|attachment\|cover`  | `primary` = main PDF (page count auto-detected, old file replaced) |
+| DELETE | `/api/admin/notes/:id/files/:uploadId` |                                                      | Detach + delete the file |
+| POST   | `/api/admin/notes/:id/blocks`          | `{ type: "CODE", content: { language, code, filename? } }` | Code snippets shown on the reader page |
+| PATCH  | `/api/admin/notes/:id/blocks/:blockId` | `{ content }`                                        | |
+| DELETE | `/api/admin/notes/:id/blocks/:blockId` |                                                      | |
+| GET    | `/api/admin/users`                     | `?q&role&page&limit`                                 | **ADMIN only** |
+| PATCH  | `/api/admin/users/:id/role`            | `{ role }`                                           | **ADMIN only**; cannot change yourself or remove the last admin |
+| DELETE | `/api/admin/users/:id`                 |                                                      | **ADMIN only**; same guards |
+
+**Note fields** (all optional except `title`): `slug`, `description`, `category`, `tags[]`, `tagline`, `badge`, `level`,
+`accent` (amber, emerald, indigo, purple, rose, sky, teal, orange), `icon` (Code, Layers, Server, Sparkles, Network, Cloud,
+BookOpen, Database, Cpu, Smartphone, Shield, Terminal), `featured`, `order`, `price`, `pages`, `videoUrl`, `projectBadge`,
+`projectTitle`, `projectUrl`, `demoUrl`, `projectId`, `instructor { name, role, company, avatar }`,
+`chapters [{ number, title, summary, contentSnippet }]`, `visibility`.
+
+### Reading files on the public site
+
+| Method | Path                              | Notes |
+|--------|-----------------------------------|-------|
+| GET    | `/api/public/notes?featured=true` | Home-page cards, ordered by `order` |
+| GET    | `/api/public/notes/:slug/file`    | Signed-in users only. Returns short-lived signed `viewUrl` / `downloadUrl` links for the PDF and attachments |
+| GET    | `/api/uploads/:id/raw?exp&sig`    | Serves the bytes for a valid signature **or** a signed-in cookie. PDFs are served inline (embeddable from `CORS_ORIGINS`), `&dl=1` forces download |
+
+Uploads are limited to documents, archives, images and source files (no executables or scripts).

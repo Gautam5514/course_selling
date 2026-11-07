@@ -16,12 +16,12 @@ export async function generateMetadata({ params }) {
 
   if (!post) {
     return {
-      title: "Article Not Found — helloS Technical Handbook",
+      title: "Article Not Found — Gopo Workspace Technical Handbook",
     };
   }
 
   return {
-    title: `${post.title} — helloS Technical Handbook`,
+    title: `${post.title} — Gopo Workspace Technical Handbook`,
     description: post.subtitle || post.summary,
     openGraph: {
       title: post.title,

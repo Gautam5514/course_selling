@@ -16,12 +16,12 @@ export async function generateMetadata({ params }) {
 
   if (!track) {
     return {
-      title: "Track Not Found — helloS",
+      title: "Track Not Found — Gopo Workspace",
     };
   }
 
   return {
-    title: `${track.title} — helloS`,
+    title: `${track.title} — Gopo Workspace`,
     description: track.tagline,
   };
 }

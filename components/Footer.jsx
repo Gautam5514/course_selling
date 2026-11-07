@@ -38,7 +38,7 @@ export default function Footer() {
               <BrandLogo size="md" />
 
               <p className="text-xs sm:text-[13px] text-emerald-100/75 leading-relaxed max-w-sm">
-                helloS is a 100% free open-access platform delivering comprehensive tech PDF notes,
+                Gopo Workspace is a 100% free open-access platform delivering comprehensive tech PDF notes,
                 study handbooks, and real-world production capstone projects for ambitious developers worldwide.
               </p>
 
@@ -138,7 +138,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link href="/about" className="hover:text-white transition-colors">
-                    About helloS
+                    About Gopo Workspace
                   </Link>
                 </li>
                 <li>

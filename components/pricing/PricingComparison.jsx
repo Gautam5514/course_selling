@@ -62,7 +62,7 @@ export default function PricingComparison() {
             Open Comparison
           </div>
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#111827]">
-            Why helloS Is Free &amp; Different
+            Why Gopo Workspace Is Free &amp; Different
           </h2>
           <p className="mt-3 text-sm text-stone-600">
             See how our free PDF and project-first niche compares to traditional paid models.
@@ -85,7 +85,7 @@ export default function PricingComparison() {
                     Course Subs ($39/mo)
                   </th>
                   <th className="py-5 px-4 text-center text-sm font-bold text-[#093c33] w-1/5 bg-emerald-50">
-                    helloS ($0 Free)
+                    Gopo Workspace ($0 Free)
                   </th>
                 </tr>
               </thead>

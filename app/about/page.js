@@ -6,9 +6,9 @@ import AboutTeam from "@/components/about/AboutTeam";
 import AboutJourney from "@/components/about/AboutJourney";
 
 export const metadata = {
-  title: "About Us — helloS | Empowering the Next Generation of Builders",
+  title: "About Us — Gopo Workspace | Empowering the Next Generation of Builders",
   description:
-    "Learn about helloS's mission, pedagogical philosophy, experienced educators, and our journey from startup to global learning accelerator.",
+    "Learn about Gopo Workspace's mission, pedagogical philosophy, experienced educators, and our journey from startup to global learning accelerator.",
 };
 
 export default function AboutPage() {

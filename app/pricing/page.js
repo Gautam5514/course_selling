@@ -3,9 +3,9 @@ import Footer from "@/components/Footer";
 import PricingPageContent from "@/components/pricing/PricingPageContent";
 
 export const metadata = {
-  title: "100% Free & Open Access Pledge — helloS",
+  title: "100% Free & Open Access Pledge — Gopo Workspace",
   description:
-    "helloS is 100% free with zero paywalls and zero subscriptions. Download comprehensive technical PDF notes and open-source production projects freely.",
+    "Gopo Workspace is 100% free with zero paywalls and zero subscriptions. Download comprehensive technical PDF notes and open-source production projects freely.",
 };
 
 export default function PricingPage() {

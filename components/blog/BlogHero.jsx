@@ -29,7 +29,7 @@ export default function BlogHero({
         {/* Pill Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-700/40 text-xs sm:text-sm text-emerald-200 backdrop-blur-md mb-6">
           <span className="w-2 h-2 rounded-full bg-[#f3843f]" />
-          <span>helloS Technical Publication &amp; Blueprints</span>
+          <span>Gopo Workspace Technical Publication &amp; Blueprints</span>
         </div>
 
         {/* Heading */}

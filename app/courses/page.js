@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import CoursesPageContent from "@/components/courses/CoursesPageContent";
 
 export const metadata = {
-  title: "Career Tracks & Cohorts — helloS",
+  title: "Career Tracks & Cohorts — Gopo Workspace",
   description:
     "Explore our 5 industry-vetted career tracks: Full-Stack Web Dev, Generative AI & LLMs, UI/UX Design Systems, Cloud & Kubernetes, and React Native Mobile.",
 };

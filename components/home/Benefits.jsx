@@ -67,7 +67,7 @@ export default function Benefits() {
         {/* Section Heading */}
         <div className="text-center max-w-3xl mx-auto mb-20 sm:mb-24">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#111827]">
-            Why Developers Choose <span className="text-[#f3843f]">helloS</span>
+            Why Developers Choose <span className="text-[#f3843f]">Gopo Workspace</span>
           </h2>
           <p className="mt-3 text-sm sm:text-base text-stone-600">
             A free developer resource hub built for practical builders: high-value PDF notes and open projects.

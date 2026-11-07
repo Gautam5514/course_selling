@@ -160,7 +160,7 @@ export default function TermsContent() {
                 100% Free Open-Access Model
               </h2>
               <p>
-                helloS is provided as a free educational resource hub. Users are not charged tuition fees, monthly subscriptions, or hidden maintenance costs. No credit card or banking information is collected by helloS.
+                Gopo Workspace is provided as a free educational resource hub. Users are not charged tuition fees, monthly subscriptions, or hidden maintenance costs. No credit card or banking information is collected by Gopo Workspace.
               </p>
               <p>
                 All technical PDF notes, study handbooks, and GitHub repository starter files are accessible without financial consideration.

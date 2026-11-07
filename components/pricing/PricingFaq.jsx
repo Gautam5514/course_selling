@@ -8,7 +8,7 @@ export default function PricingFaq() {
 
   const faqs = [
     {
-      q: "Why is helloS 100% free without charging money?",
+      q: "Why is Gopo Workspace 100% free without charging money?",
       a: "Our core vision and niche is to provide high-quality developer resources: in-depth technical PDF notes, cheatsheets, and production-grade GitHub projects. We believe foundational engineering knowledge should be open and accessible to all developers without predatory subscription walls.",
     },
     {

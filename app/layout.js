@@ -1,17 +1,19 @@
 import "./globals.css";
+import { AuthProvider } from "@/components/AuthProvider";
+import { ToastProvider } from "@/components/ui/ToastProvider";
 
 
 export const metadata = {
-  title: "helloS — Unlock Your Potential with Expert-Led Courses",
+  title: "Gopo Workspace — Unlock Your Potential with Expert-Led Courses",
   description:
-    "Master in-demand skills from top industry professionals on helloS by hellobject.com. Join real-time virtual classrooms, earn recognized certificates, and accelerate your career.",
+    "Master in-demand skills from top industry professionals on Gopo Workspace by hellobject.com. Join real-time virtual classrooms, earn recognized certificates, and accelerate your career.",
   icons: {
     icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icon.svg?v=gopo", type: "image/svg+xml" },
+      { url: "/favicon.svg?v=gopo", type: "image/svg+xml" },
     ],
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    shortcut: "/favicon.ico?v=gopo",
+    apple: "/apple-touch-icon.png?v=gopo",
   },
 };
 
@@ -28,7 +30,9 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="min-h-full font-sans bg-[#faf7f2] text-[#0f2820]">
-        {children}
+        <ToastProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ToastProvider>
       </body>
     </html>
   );

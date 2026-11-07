@@ -380,7 +380,7 @@ export default function BlogPostContent({ post }) {
                   Take Your Knowledge Into Production
                 </h3>
                 <p className="text-xs sm:text-sm text-emerald-100/80 mb-6 max-w-2xl leading-relaxed">
-                  Every technical guide in helloS includes 100% free companion
+                  Every technical guide in Gopo Workspace includes 100% free companion
                   PDF blueprints and production-ready GitHub repositories with
                   zero paywalls.
                 </p>

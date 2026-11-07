@@ -8,8 +8,8 @@ export default function CoursesFaqSection() {
 
   const faqs = [
     {
-      q: "Is helloS really 100% free with no hidden charges or subscriptions?",
-      a: "Yes! helloS is entirely free. All PDF handbooks, architectural cheatsheets, study notes, and GitHub project repositories are open and accessible to all developers without fees, paywalls, or credit cards.",
+      q: "Is Gopo Workspace really 100% free with no hidden charges or subscriptions?",
+      a: "Yes! Gopo Workspace is entirely free. All PDF handbooks, architectural cheatsheets, study notes, and GitHub project repositories are open and accessible to all developers without fees, paywalls, or credit cards.",
     },
     {
       q: "Can I download the technical PDF notes and study offline?",

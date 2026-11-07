@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import ProjectsPageContent from "@/components/projects/ProjectsPageContent";
 
 export const metadata = {
-  title: "Open-Source Projects & Live Demos — helloS",
+  title: "Open-Source Projects & Live Demos — Gopo Workspace",
   description:
     "Explore 100% free real-world full-stack, AI, design system, and mobile capstone projects. Clone GitHub repositories, test live demos, and like your favorites.",
 };
