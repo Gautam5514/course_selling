@@ -4,6 +4,7 @@ import { signFileUrl } from '../utils/signedUrl.js';
 import { Note } from '../models/Note.js';
 import { Upload } from '../models/Upload.js';
 import { registerUpload, discardUpload } from './uploadController.js';
+import { upsertStarterNotes, STARTER_NOTES } from '../data/starterNotes.js';
 
 const PUBLIC_FILTER = { visibility: 'PUBLIC', publishedAt: { $ne: null }, deletedAt: null };
 const POPULATE_FILES = [
@@ -201,6 +202,12 @@ export const listNotes = asyncHandler(async (req, res) => {
     pages: Math.max(1, Math.ceil(total / limit)),
     categories: categories.sort(),
   });
+});
+
+// POST /api/admin/notes/starter — add the built-in starter cards that are missing.
+export const addStarterNotes = asyncHandler(async (req, res) => {
+  const { created } = await upsertStarterNotes({ ownerId: req.user._id });
+  return sendData(res, { created, total: STARTER_NOTES.length });
 });
 
 export const getNote = asyncHandler(async (req, res) => {

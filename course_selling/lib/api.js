@@ -407,6 +407,10 @@ export const api = {
     reorderNotes(order) {
       return request("/api/admin/notes/order", { method: "PATCH", body: { order } });
     },
+    /** Create the built-in starter cards (DSA, Frontend, Full Stack, Backend…) that are missing. */
+    addStarterNotes() {
+      return request("/api/admin/notes/starter", { method: "POST" });
+    },
 
     /** role: "primary" (main PDF) | "attachment" | "cover". onProgress(0-100). */
     uploadNoteFile(id, file, role = "primary", onProgress) {

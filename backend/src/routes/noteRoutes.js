@@ -38,6 +38,7 @@ import {
   getPublicNote,
   getPublicNoteFile,
   listNotes,
+  addStarterNotes,
   getNote,
   createNote,
   updateNote,
@@ -95,6 +96,7 @@ adminNoteRoutes.get('/', validate({ query: adminNotesQuery }), listNotes);
 adminNoteRoutes.post('/', validate({ body: createNoteSchema }), createNote);
 // NOTE: must be registered before '/:id'.
 adminNoteRoutes.patch('/order', validate({ body: noteOrderSchema }), reorderNotes);
+adminNoteRoutes.post('/starter', addStarterNotes);
 adminNoteRoutes.get('/:id', validate(idParam), getNote);
 adminNoteRoutes.patch('/:id', validate({ ...idParam, body: updateNoteSchema }), updateNote);
 adminNoteRoutes.delete('/:id', validate(idParam), deleteNote);

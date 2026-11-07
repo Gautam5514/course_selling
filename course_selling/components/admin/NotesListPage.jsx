@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Plus, Search, Pencil, Trash2, RotateCcw, Eye, EyeOff, Star, StarOff, FileText, ExternalLink, Heart, Download } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, RotateCcw, Eye, EyeOff, Star, StarOff, FileText, ExternalLink, Heart, Download, Sparkles } from "lucide-react";
 import { useToast } from "@/components/ui/ToastProvider";
 import { api, friendlyMessage, formatBytes } from "@/lib/api";
 import { accentOf, CardIcon } from "@/lib/cardTheme";
@@ -31,6 +31,7 @@ export default function NotesListPage() {
   const [error, setError] = useState("");
   const [busyId, setBusyId] = useState(null);
   const [confirm, setConfirm] = useState(null); // note to trash
+  const [seeding, setSeeding] = useState(false);
 
   const setParam = (patch) => {
     const next = new URLSearchParams(params.toString());
@@ -116,6 +117,19 @@ export default function NotesListPage() {
       `"${note.title}" restored.`
     );
 
+  const addStarter = async () => {
+    setSeeding(true);
+    try {
+      const { data } = await api.admin.addStarterNotes();
+      toast.success(data.created.length ? `Added ${data.created.length} starter note${data.created.length === 1 ? "" : "s"}. They are live on the home page.` : "All starter notes already exist.", { duration: 3500 });
+      await load();
+    } catch (err) {
+      toast.error(friendlyMessage(err, "We couldn't add the starter notes."));
+    } finally {
+      setSeeding(false);
+    }
+  };
+
   const notes = result?.data ?? [];
   const meta = result?.meta ?? {};
 
@@ -172,8 +186,19 @@ export default function NotesListPage() {
             <EmptyState
               icon={FileText}
               title={status === "trash" ? "Trash is empty" : q || category ? "No notes match" : "No notes yet"}
-              message={status === "trash" ? "Notes you remove will wait here until you restore them." : q || category ? "Try another search or clear the filters." : "Create your first note card and it will appear on the home page."}
-              action={!q && !category && status !== "trash" ? <Button variant="accent" href="/admin/notes/new" icon={Plus}>Create a note</Button> : null}
+              message={status === "trash" ? "Notes you remove will wait here until you restore them." : q || category ? "Try another search or clear the filters." : "Start with the built-in cards (DSA, Frontend, Full Stack, Backend, AI/ML, System Design, DevOps) and add your PDFs, or create a note from scratch."}
+              action={
+                !q && !category && status !== "trash" ? (
+                  <div className="flex flex-wrap justify-center gap-2">
+                    <Button variant="accent" icon={Sparkles} onClick={addStarter} loading={seeding}>
+                      Add starter notes
+                    </Button>
+                    <Button variant="secondary" href="/admin/notes/new" icon={Plus}>
+                      Create a note
+                    </Button>
+                  </div>
+                ) : null
+              }
             />
           )}
 
