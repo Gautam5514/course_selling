@@ -46,3 +46,6 @@ services:
         value: hellos
       - key: APP_TIMEZONE
         value: Asia/Kolkata
+      # Google sign-in: base64 of the Firebase service-account JSON (optional).
+      - key: FIREBASE_SERVICE_ACCOUNT_BASE64
+        sync: false

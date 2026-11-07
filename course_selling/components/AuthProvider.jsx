@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { api, ApiError } from "@/lib/api";
+import { getGoogleIdToken } from "@/lib/firebase";
 
 const AuthContext = createContext(null);
 
@@ -67,6 +68,15 @@ export function AuthProvider({ children }) {
     return data.user;
   }, []);
 
+  /** Google popup → backend session. Returns { user, created }. */
+  const loginWithGoogle = useCallback(async () => {
+    const idToken = await getGoogleIdToken();
+    const { data } = await api.googleLogin(idToken);
+    setUser(data.user);
+    setBackendReachable(true);
+    return data;
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       await api.logout();
@@ -76,8 +86,8 @@ export function AuthProvider({ children }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, backendReachable, isAuthenticated: Boolean(user), login, register, logout, refresh }),
-    [user, loading, backendReachable, login, register, logout, refresh]
+    () => ({ user, loading, backendReachable, isAuthenticated: Boolean(user), login, register, loginWithGoogle, logout, refresh }),
+    [user, loading, backendReachable, login, register, loginWithGoogle, logout, refresh]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

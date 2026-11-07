@@ -44,6 +44,12 @@ export const registerSchema = z
   })
   .strict();
 
+export const googleLoginSchema = z
+  .object({
+    idToken: z.string().min(20).max(4096),
+  })
+  .strict();
+
 // ─── Notes ───────────────────────────────────────────────────────────────────
 const httpUrl = z.string().trim().url('Please enter a valid link (https://…)').max(2000);
 /** A URL field that may also be cleared with an empty string. */

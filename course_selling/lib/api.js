@@ -356,6 +356,12 @@ export const api = {
     setToken(res?.data?.token);
     return res;
   },
+  /** Google sign-in / sign-up with a Firebase ID token. */
+  async googleLogin(idToken) {
+    const res = await request("/api/auth/google", { method: "POST", body: { idToken } });
+    setToken(res?.data?.token);
+    return res;
+  },
   async logout() {
     try {
       return await request("/api/auth/logout", { method: "POST" });

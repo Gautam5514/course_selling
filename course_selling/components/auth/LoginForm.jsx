@@ -6,6 +6,18 @@ import { LogIn, UserPlus, Mail, Lock, User, FileText, Loader2, AlertCircle, Eye,
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 import { ApiError, friendlyMessage, fieldErrors, isStaff } from "@/lib/api";
+import { googleSignInEnabled, GoogleSignInCancelled } from "@/lib/firebase";
+
+function GoogleLogo({ className = "w-4 h-4" }) {
+  return (
+    <svg className={className} viewBox="0 0 48 48" aria-hidden="true">
+      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+    </svg>
+  );
+}
 
 /** Only allow same-site relative paths as a return target. */
 function safeNext(raw) {
@@ -19,7 +31,7 @@ export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = safeNext(searchParams.get("next"));
-  const { user, loading, login, register, backendReachable } = useAuth();
+  const { user, loading, login, register, loginWithGoogle, backendReachable } = useAuth();
   const toast = useToast();
 
   const [mode, setMode] = useState(searchParams.get("mode") === "register" ? "register" : "login"); // "login" | "register"
@@ -30,6 +42,7 @@ export default function LoginForm() {
   const [error, setError] = useState("");
   const [fieldError, setFieldError] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
 
   // Already signed in → go straight to where they wanted to be.
   useEffect(() => {
@@ -84,6 +97,22 @@ export default function LoginForm() {
     }
   };
 
+  const handleGoogle = async () => {
+    if (googleBusy || submitting) return;
+    setError("");
+    setGoogleBusy(true);
+    try {
+      const { user: who, created } = await loginWithGoogle();
+      toast.success(created ? `Welcome aboard, ${who.name || "friend"}!` : `Welcome back${who.name ? `, ${who.name}` : ""}!`);
+      router.replace(next === "/" && isStaff(who) ? "/admin" : next);
+    } catch (err) {
+      if (err instanceof GoogleSignInCancelled) return; // they closed the popup, nothing to say
+      setError(err instanceof ApiError ? friendlyMessage(err) : err?.message || "Google sign-in didn't go through. Please try again.");
+    } finally {
+      setGoogleBusy(false);
+    }
+  };
+
   const inputClass = (key) =>
     `w-full pl-10 pr-4 py-2.5 rounded-xl text-sm bg-stone-50 border focus:outline-none focus:ring-1 text-stone-900 placeholder:text-stone-400 transition-colors ${
       fieldError[key]
@@ -133,6 +162,25 @@ export default function LoginForm() {
         )}
 
         <form onSubmit={handleSubmit} className="px-7 py-6 space-y-4">
+          {googleSignInEnabled && (
+            <>
+              <button
+                type="button"
+                onClick={handleGoogle}
+                disabled={googleBusy || submitting}
+                className="cursor-pointer w-full inline-flex items-center justify-center gap-2.5 py-2.5 rounded-xl text-sm font-bold text-stone-800 bg-white border border-stone-300 hover:bg-stone-50 hover:border-stone-400 shadow-sm transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-wait"
+              >
+                {googleBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <GoogleLogo />}
+                <span>{isRegister ? "Sign up with Google" : "Continue with Google"}</span>
+              </button>
+              <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                <span className="flex-1 h-px bg-stone-200" />
+                or use email
+                <span className="flex-1 h-px bg-stone-200" />
+              </div>
+            </>
+          )}
+
           {isRegister && (
             <label className="block">
               <span className="text-xs font-bold text-stone-600 uppercase tracking-wider">Name</span>

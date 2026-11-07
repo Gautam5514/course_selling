@@ -144,6 +144,16 @@ Every write returns the fresh stats object:
 Writes are rate limited (120 / 15 min per visitor). `npm run recount` rebuilds the
 counters on every note from the interaction rows if they ever drift.
 
+## Google sign-in
+
+`POST /api/auth/google` `{ idToken }` takes a Firebase ID token (the browser
+signs in with the Google popup via Firebase Auth) and verifies it with Firebase
+Admin (`FIREBASE_SERVICE_ACCOUNT_BASE64`). The account is matched by email: a
+new email becomes a `VIEWER`, an existing account (including the admin) simply
+gets Google linked, so one email is always one account. Google-only accounts
+have no password; a password login on them answers "This account signs in with
+Google". `GET /api/auth/providers` tells the UI which methods are enabled.
+
 ## Student accounts
 
 `POST /api/auth/register` `{ name, email, password }` creates a `VIEWER` account

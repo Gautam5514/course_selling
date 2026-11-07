@@ -92,6 +92,25 @@ export const config = {
   },
   maxUploadBytes: int('MAX_UPLOAD_BYTES', 2 * 1024 * 1024 * 1024),
 
+  // Google sign-in: Firebase Admin verifies the ID tokens the browser gets
+  // from Firebase Auth. Provide the service account JSON as base64 (or raw JSON).
+  firebase: {
+    serviceAccount: (() => {
+      const raw = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64 || process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '';
+      if (!raw) return null;
+      try {
+        const text = raw.trim().startsWith('{') ? raw : Buffer.from(raw, 'base64').toString('utf8');
+        const sa = JSON.parse(text);
+        return sa.project_id && sa.client_email && sa.private_key ? sa : null;
+      } catch {
+        throw new Error('FIREBASE_SERVICE_ACCOUNT_BASE64 is not valid base64 JSON');
+      }
+    })(),
+    get enabled() {
+      return Boolean(this.serviceAccount);
+    },
+  },
+
   // Calendar timezone for date-keyed content such as "Today Code".
   timezone: process.env.APP_TIMEZONE || 'Asia/Kolkata',
 
