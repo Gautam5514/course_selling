@@ -39,7 +39,7 @@ export const popularCourses = [
     tagline: "450+ Solved Patterns • LeetCode Sheet • Visual Trees & Graphs",
     summary: "Visual decision trees, sliding windows, recursion templates, and graph traversals for top product company interviews.",
     instructor: {
-      name: "Kunal & Leads",
+      name: "Gautam & Leads",
       role: "DSA & System Design Lead",
       company: "ex-Google",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80",

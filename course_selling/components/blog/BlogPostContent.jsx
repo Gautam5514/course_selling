@@ -99,7 +99,12 @@ export default function BlogPostContent({ post }) {
   // Get other posts for the "Related Deep Dives" section
   const relatedPosts = techBlogPosts
     .filter((p) => p.slug !== post.slug)
-    .slice(0, 2);
+    .sort((a, b) => {
+      const sameCatA = a.category === post.category ? 1 : 0;
+      const sameCatB = b.category === post.category ? 1 : 0;
+      return sameCatB - sameCatA;
+    })
+    .slice(0, 3);
 
   return (
     <>
@@ -444,9 +449,33 @@ export default function BlogPostContent({ post }) {
                   </div>
                   <p className="text-xs text-stone-500 mb-3">{post.author.role}</p>
                   <p className="text-xs text-stone-600 leading-relaxed">
-                    Senior systems educator specializing in distributed consensus,
-                    modern React compilers, and open-weights multimodal inference.
+                    {post.author.bio ||
+                      "Senior systems educator specializing in distributed consensus, modern React compilers, and open-weights multimodal inference."}
                   </p>
+                  {post.author.linkedin && (
+                    <div className="mt-4 flex flex-wrap items-center gap-2.5">
+                      <a
+                        href={post.author.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#0a66c2] text-white text-xs font-bold shadow-xs hover:bg-[#084e96] transition-all"
+                      >
+                        <span>Connect on LinkedIn</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                      {post.author.github && (
+                        <a
+                          href={post.author.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#1f2937] text-white text-xs font-bold shadow-xs hover:bg-black transition-all"
+                        >
+                          <span>GitHub Repositories</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -540,7 +569,7 @@ export default function BlogPostContent({ post }) {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {relatedPosts.map((related) => (
                 <Link
                   key={related.slug}

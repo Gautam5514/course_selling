@@ -8,7 +8,7 @@ import AboutJourney from "@/components/about/AboutJourney";
 export const metadata = {
   title: "About Us — Gopo Workspace | Empowering the Next Generation of Builders",
   description:
-    "Learn about Gopo Workspace's mission, pedagogical philosophy, experienced educators, and our journey from startup to global learning accelerator.",
+    "Learn about Gopo Workspace's mission, teaching philosophy, and Gautam Pandit, the software engineer who builds every course, project and set of notes on the platform.",
 };
 
 export default function AboutPage() {

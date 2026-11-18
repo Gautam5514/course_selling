@@ -280,7 +280,7 @@ export const pdfNotesList = [
     fileSize: "19.2 MB",
     downloads: "42,800+",
     likes: 3840,
-    author: "Kunal & FAANG Staff Engineers",
+    author: "Gautam & FAANG Staff Engineers",
     badge: "Most Popular",
     badgeColor: "bg-amber-500 text-white",
     description:

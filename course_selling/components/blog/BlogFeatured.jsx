@@ -1,22 +1,67 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Calendar, Clock, Sparkles } from "lucide-react";
+import { ArrowUpRight, Calendar, Clock, Sparkles, ChevronRight } from "lucide-react";
 import LikeButton from "@/components/LikeButton";
 import { techBlogPosts } from "@/data/blogsData";
 
+// Selected premier featured handbooks
+const FEATURED_SLUGS = [
+  "my-journey-building-fullstack-ai-research-gautam-pandit",
+  "deepseek-v3-r1-architecture-mla-pure-rl",
+  "model-context-protocol-mcp-ai-agent-architecture",
+  "nextjs-16-react-19-architecture-guide",
+];
+
 export default function BlogFeatured() {
-  const featured = techBlogPosts[0]; // Next.js 16 & React 19 Architecture Guide
+  const [selectedSlug, setSelectedSlug] = useState(FEATURED_SLUGS[0]);
+
+  const featured =
+    techBlogPosts.find((p) => p.slug === selectedSlug) || techBlogPosts[0];
 
   if (!featured) return null;
 
   return (
-    <section className="py-14 sm:py-16 bg-[#faf7f2] relative">
+    <section className="py-12 sm:py-16 bg-[#faf7f2] relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Featured Selector Tabs Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#f3843f]" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500">
+              Premier Architecture Showcases
+            </h3>
+          </div>
+
+          {/* Quick Switch Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+            {FEATURED_SLUGS.map((slug) => {
+              const post = techBlogPosts.find((p) => p.slug === slug);
+              if (!post) return null;
+              const isSelected = post.slug === featured.slug;
+              return (
+                <button
+                  key={slug}
+                  onClick={() => setSelectedSlug(slug)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                    isSelected
+                      ? "bg-[#0b382d] text-white shadow-xs"
+                      : "bg-white text-stone-600 hover:text-stone-900 border border-stone-200 hover:bg-stone-50"
+                  }`}
+                >
+                  {post.tags[0] || post.category}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Featured Big Card */}
         <div className="rounded-[36px] bg-white border border-stone-200/90 overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 grid grid-cols-1 lg:grid-cols-12 group">
           {/* Left: Image Container */}
-          <div className="lg:col-span-7 relative aspect-[16/10] lg:aspect-auto min-h-[320px] bg-stone-900 overflow-hidden">
+          <div className="lg:col-span-7 relative aspect-[16/10] lg:aspect-auto min-h-[340px] bg-stone-900 overflow-hidden">
             <Image
               src={featured.heroImage}
               alt={featured.title}
@@ -25,10 +70,14 @@ export default function BlogFeatured() {
               className="object-cover group-hover:scale-105 transition-transform duration-700"
               sizes="(max-width: 1024px) 100vw, 680px"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
-            <div className="absolute top-5 left-5 bg-[#0b382d] text-white px-3.5 py-1.5 rounded-full text-xs font-bold shadow-md flex items-center gap-1.5">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute top-5 left-5 bg-[#0b382d]/95 backdrop-blur-md text-white px-3.5 py-1.5 rounded-full text-xs font-bold shadow-md flex items-center gap-1.5 border border-emerald-700/40">
               <Sparkles className="w-3 h-3 text-[#f3843f]" />
-              <span>Featured Architecture Handbook</span>
+              <span>{featured.category} • Featured Blueprint</span>
+            </div>
+            <div className="absolute bottom-4 left-5 right-5 text-white/90 text-xs font-mono hidden sm:flex items-center justify-between pointer-events-none">
+              <span>{featured.tags.slice(0, 3).map((t) => `#${t}`).join("  ")}</span>
+              <span className="text-[#f3843f] font-semibold">100% Free Architecture</span>
             </div>
           </div>
 
@@ -40,6 +89,7 @@ export default function BlogFeatured() {
                   <Calendar className="w-3.5 h-3.5 text-[#f3843f]" />
                   {featured.date}
                 </span>
+                <span className="text-stone-300">•</span>
                 <span className="flex items-center gap-1 font-medium">
                   <Clock className="w-3.5 h-3.5 text-[#f3843f]" />
                   {featured.readTime}
@@ -55,6 +105,18 @@ export default function BlogFeatured() {
               <p className="mt-4 text-xs sm:text-sm text-stone-600 leading-relaxed">
                 {featured.subtitle}
               </p>
+
+              {/* Tags */}
+              <div className="mt-5 flex flex-wrap gap-1.5">
+                {featured.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-2.5 py-0.5 rounded-md bg-stone-100 text-stone-700 text-[11px] font-semibold"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
             </div>
 
             <div className="mt-8 pt-6 border-t border-stone-100 flex items-center justify-between">
