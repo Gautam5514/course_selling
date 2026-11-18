@@ -28,8 +28,8 @@ export function buildApiRouter() {
 
   api.get('/health', (_req, res) => {
     const dbUp = mongoose.connection.readyState === 1;
-    res.status(dbUp ? 200 : 503).json({
-      data: { status: dbUp ? 'ok' : 'degraded', database: dbUp ? 'connected' : 'disconnected', storage: storage.name, uptime: process.uptime() },
+    res.status(200).json({
+      data: { status: dbUp ? 'ok' : 'starting', database: dbUp ? 'connected' : 'disconnected', storage: storage.name, uptime: process.uptime() },
     });
   });
 

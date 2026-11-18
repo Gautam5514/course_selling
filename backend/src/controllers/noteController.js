@@ -1,3 +1,4 @@
+import { publicCache } from '../utils/ttlCache.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { sendData, ApiError } from '../utils/apiError.js';
 import { signFileUrl } from '../utils/signedUrl.js';
@@ -61,19 +62,23 @@ export const listPublicNotes = asyncHandler(async (req, res) => {
 
   // Featured (home page) listing is small and manually ordered; everything
   // else pages newest-first by id.
-  if (featured === true) {
-    const docs = await Note.find(filter).sort({ order: 1, createdAt: 1 }).limit(100).populate(POPULATE_FILES);
-    return sendData(res, docs.map(cardView), 200, { nextCursor: null });
-  }
+  // Same payload for every visitor (cardView has no per-user fields), so it is
+  // cached briefly and shared; concurrent identical requests run one query.
+  const key = `notes:list:${JSON.stringify(req.query)}`;
+  const payload = await publicCache.wrap(key, async () => {
+    if (featured === true) {
+      const docs = await Note.find(filter).sort({ order: 1, createdAt: 1 }).limit(100).populate(POPULATE_FILES);
+      return { items: docs.map(cardView), nextCursor: null };
+    }
+    if (cursor) filter._id = { $lt: cursor };
+    const docs = await Note.find(filter).sort({ _id: -1 }).limit(limit + 1).populate(POPULATE_FILES);
+    const hasMore = docs.length > limit;
+    const page = hasMore ? docs.slice(0, limit) : docs;
+    return { items: page.map(cardView), nextCursor: hasMore ? page[page.length - 1]._id.toString() : null };
+  });
 
-  if (cursor) filter._id = { $lt: cursor };
-  const docs = await Note.find(filter).sort({ _id: -1 }).limit(limit + 1).populate(POPULATE_FILES);
-
-  const hasMore = docs.length > limit;
-  const page = hasMore ? docs.slice(0, limit) : docs;
-  const nextCursor = hasMore ? page[page.length - 1]._id.toString() : null;
-
-  return sendData(res, page.map(cardView), 200, { nextCursor });
+  res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=120');
+  return sendData(res, payload.items, 200, { nextCursor: payload.nextCursor });
 });
 
 export const getPublicNote = asyncHandler(async (req, res) => {

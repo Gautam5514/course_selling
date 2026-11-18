@@ -312,5 +312,7 @@ export const projectsList = [
 ];
 
 export function getProjectBySlug(slug) {
-  return projectsList.find((p) => p.slug === slug) || null;
+  return projectsBySlug.get(slug) || null;
 }
+
+export const projectsBySlug = new Map(projectsList.map((p) => [p.slug, p]));

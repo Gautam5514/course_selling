@@ -1,3 +1,4 @@
+import { TtlCache } from '../utils/ttlCache.js';
 import { config } from '../config/index.js';
 import { ApiError } from '../utils/apiError.js';
 import { verifyToken } from './jwt.js';
@@ -12,13 +13,17 @@ function extractToken(req) {
 }
 
 /** Populates req.user if a valid token is present; never throws. */
+export const userCache = new TtlCache({ max: 500, ttlMs: 20_000 });
+
 export async function attachUser(req, _res, next) {
   try {
     const token = extractToken(req);
     if (!token) return next();
     const payload = verifyToken(token);
-    const user = await User.findById(payload.sub);
+    // Short-lived per-process cache: avoids a DB round trip on every API call.
+    const user = await userCache.wrap(String(payload.sub), () => User.findById(payload.sub).then((u) => u ?? null), 20_000);
     if (user) req.user = user;
+    else userCache.map.delete(String(payload.sub));
   } catch {
     // invalid/expired token → treat as anonymous
   }

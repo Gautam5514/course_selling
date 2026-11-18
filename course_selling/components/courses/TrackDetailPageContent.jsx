@@ -18,8 +18,8 @@ import {
   GitBranch,
 } from "lucide-react";
 import { popularTracksList } from "@/data/tracksData";
-import { pdfNotesList } from "@/data/pdfNotesData";
-import { projectsList } from "@/data/legacyProjectsData";
+import { pdfNotesList, pdfById } from "@/data/pdfNotesData";
+import { projectsById, projectsBySlug } from "@/data/legacyProjectsData";
 import LikeButton from "@/components/LikeButton";
 import PdfPreviewModal from "@/components/PdfPreviewModal";
 import ProjectDetailModal from "@/components/ProjectDetailModal";
@@ -33,7 +33,7 @@ export default function TrackDetailPageContent({ track }) {
   const otherTracks = popularTracksList.filter((t) => t.slug !== track.slug);
 
   const matchedPdf =
-    pdfNotesList.find((p) => p.id === track.pdfResource?.id) || pdfNotesList[0];
+    pdfById.get(track.pdfResource?.id) || pdfNotesList[0];
 
   const handleOpenPdf = () => {
     setSelectedPdf(matchedPdf);
@@ -41,7 +41,7 @@ export default function TrackDetailPageContent({ track }) {
 
   const handleOpenProject = (proj) => {
     const fullProject =
-      projectsList.find((p) => p.id === proj.id || p.slug === proj.id) || {
+      projectsById.get(proj.id) || projectsBySlug.get(proj.id) || {
         ...proj,
         category: track.name,
         level: track.level,

@@ -15,13 +15,20 @@ if (typeof net.setDefaultAutoSelectFamily === 'function') {
 }
 
 async function start() {
-  await connectDB();
-  await ensureOwner();
-
+  // Open the port FIRST so Render's proxy/health check gets an answer right
+  // away; the DB connects in the background (the /api gate returns a friendly
+  // 503 until it is ready, and static endpoints like /health work immediately).
   const app = createApp();
   const server = app.listen(config.port, () => {
     logger.info(`API listening on http://localhost:${config.port} (${config.nodeEnv})`);
   });
+
+  connectDB()
+    .then(() => ensureOwner())
+    .catch((err) => {
+      logger.error({ err }, 'Failed to initialise database');
+      process.exit(1);
+    });
 
   const shutdown = async (signal) => {
     logger.info(`${signal} received, shutting down...`);

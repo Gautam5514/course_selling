@@ -1,3 +1,4 @@
+import { publicCache } from '../utils/ttlCache.js';
 import { Router } from 'express';
 import { z } from 'zod';
 import rateLimit from 'express-rate-limit';
@@ -92,6 +93,11 @@ publicNoteRoutes.post('/:slug/download', ...memberInteract, recordDownload);
 // ─── Admin ───────────────────────────────────────────────────────────────────
 export const adminNoteRoutes = Router();
 adminNoteRoutes.use(requireAdmin);
+// Any admin write invalidates the shared public read cache.
+adminNoteRoutes.use((req, res, next) => {
+  if (req.method !== 'GET') res.on('finish', () => publicCache.clear());
+  next();
+});
 adminNoteRoutes.get('/', validate({ query: adminNotesQuery }), listNotes);
 adminNoteRoutes.post('/', validate({ body: createNoteSchema }), createNote);
 // NOTE: must be registered before '/:id'.

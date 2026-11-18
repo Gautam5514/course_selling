@@ -309,3 +309,12 @@ export const projectsList = [
     ],
   },
 ];
+
+/* ---- Precomputed lookups (built once at module load) ---- */
+// First entry wins (matches Array.find semantics).
+export const projectsById = new Map();
+export const projectsBySlug = new Map();
+for (const p of projectsList) {
+  if (!projectsById.has(p.id)) projectsById.set(p.id, p);
+  if (!projectsBySlug.has(p.slug)) projectsBySlug.set(p.slug, p);
+}

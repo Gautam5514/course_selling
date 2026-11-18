@@ -16,12 +16,14 @@ const HOME_CATEGORIES = [
   { label: "High-Scale Systems", filter: ["Rust & Systems", "Distributed Systems", "Security & Cryptography", "Next.js & React 19"] },
 ];
 
+const HOME_CATEGORIES_BY_LABEL = new Map(HOME_CATEGORIES.map((c) => [c.label, c]));
+
 export default function BlogInsights() {
   const [activeTab, setActiveTab] = useState("all");
 
   const filteredPosts = techBlogPosts.filter((post) => {
     if (activeTab === "all") return true;
-    const tabObj = HOME_CATEGORIES.find((c) => c.label === activeTab);
+    const tabObj = HOME_CATEGORIES_BY_LABEL.get(activeTab);
     if (!tabObj || tabObj.filter === "all") return true;
     if (Array.isArray(tabObj.filter)) {
       return tabObj.filter.includes(post.category);
@@ -167,9 +169,11 @@ export default function BlogInsights() {
                 {/* Footer: Author & Action Button */}
                 <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <img
+                    <Image
                       src={post.author.avatar}
                       alt={post.author.name}
+                      width={28}
+                      height={28}
                       className="w-7 h-7 rounded-full object-cover ring-1 ring-emerald-600/30"
                     />
                     <div>

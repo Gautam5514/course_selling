@@ -108,6 +108,8 @@ const noteSchema = new Schema(
 
 noteSchema.index({ visibility: 1, publishedAt: -1 });
 noteSchema.index({ featured: 1, order: 1, createdAt: -1 });
+// Public listing: visibility + not-deleted + featured, ordered.
+noteSchema.index({ visibility: 1, deletedAt: 1, featured: 1, order: 1, createdAt: 1 });
 noteSchema.index({ title: 'text', tagline: 'text', description: 'text', tags: 'text' });
 
 /** Average rating rounded to 2 decimals, or null when nobody has rated yet. */

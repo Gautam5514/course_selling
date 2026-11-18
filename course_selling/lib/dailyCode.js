@@ -19,12 +19,14 @@ export const LANGUAGES = [
   { value: "other", label: "Other", ext: "txt" },
 ];
 
+export const LANG_BY_VALUE = new Map(LANGUAGES.map((l) => [l.value, l]));
+
 export function languageLabel(value) {
-  return LANGUAGES.find((l) => l.value === value)?.label || value;
+  return LANG_BY_VALUE.get(value)?.label || value;
 }
 
 export function languageExt(value) {
-  return LANGUAGES.find((l) => l.value === value)?.ext || "txt";
+  return LANG_BY_VALUE.get(value)?.ext || "txt";
 }
 
 export const DIFFICULTY_CLASS = {

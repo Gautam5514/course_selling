@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -63,6 +63,19 @@ export default function BlogPostContent({ post }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [post]);
 
+  // Other posts for the "Related Deep Dives" section (same category first)
+  const relatedPosts = useMemo(() => {
+    if (!post) return [];
+    return techBlogPosts
+      .filter((p) => p.slug !== post.slug)
+      .sort((a, b) => {
+        const sameCatA = a.category === post.category ? 1 : 0;
+        const sameCatB = b.category === post.category ? 1 : 0;
+        return sameCatB - sameCatA;
+      })
+      .slice(0, 3);
+  }, [post]);
+
   const copyCode = (codeText, id) => {
     navigator.clipboard.writeText(codeText);
     setCopiedCodeId(id);
@@ -95,16 +108,6 @@ export default function BlogPostContent({ post }) {
       </div>
     );
   }
-
-  // Get other posts for the "Related Deep Dives" section
-  const relatedPosts = techBlogPosts
-    .filter((p) => p.slug !== post.slug)
-    .sort((a, b) => {
-      const sameCatA = a.category === post.category ? 1 : 0;
-      const sameCatB = b.category === post.category ? 1 : 0;
-      return sameCatB - sameCatA;
-    })
-    .slice(0, 3);
 
   return (
     <>
@@ -186,9 +189,11 @@ export default function BlogPostContent({ post }) {
             {/* Author & Meta Row */}
             <div className="pt-6 border-t border-stone-100 flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <img
+                <Image
                   src={post.author.avatar}
                   alt={post.author.name}
+                  width={48}
+                  height={48}
                   className="w-12 h-12 rounded-full object-cover ring-2 ring-emerald-600/30"
                 />
                 <div>
@@ -433,9 +438,11 @@ export default function BlogPostContent({ post }) {
 
               {/* Author Bio Banner */}
               <div className="rounded-2xl bg-white border border-stone-200/90 p-6 flex flex-col sm:flex-row items-center sm:items-start gap-5 shadow-xs">
-                <img
+                <Image
                   src={post.author.avatar}
                   alt={post.author.name}
+                  width={64}
+                  height={64}
                   className="w-16 h-16 rounded-full object-cover ring-2 ring-emerald-600/30 shrink-0"
                 />
                 <div className="text-center sm:text-left flex-1">

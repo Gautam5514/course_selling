@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import TrackDetailPageContent from "@/components/courses/TrackDetailPageContent";
-import { popularTracksList } from "@/data/tracksData";
+import { popularTracksList, tracksBySlug } from "@/data/tracksData";
 
 export async function generateStaticParams() {
   return popularTracksList.map((track) => ({
@@ -12,7 +12,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const track = popularTracksList.find((t) => t.slug === slug);
+  const track = tracksBySlug.get(slug);
 
   if (!track) {
     return {
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }) {
 
 export default async function TrackDetailPage({ params }) {
   const { slug } = await params;
-  const track = popularTracksList.find((t) => t.slug === slug);
+  const track = tracksBySlug.get(slug);
 
   if (!track) {
     notFound();

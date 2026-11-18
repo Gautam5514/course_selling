@@ -23,5 +23,7 @@ const noteInteractionSchema = new Schema(
 
 noteInteractionSchema.index({ note: 1, visitor: 1 }, { unique: true });
 noteInteractionSchema.index({ note: 1, reviewedAt: -1 });
+// Global 'latest reviews' (home testimonials).
+noteInteractionSchema.index({ reviewedAt: -1, updatedAt: -1 }, { partialFilterExpression: { review: { $gt: '' } } });
 
 export const NoteInteraction = model('NoteInteraction', noteInteractionSchema);

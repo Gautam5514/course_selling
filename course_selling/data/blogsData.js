@@ -1489,3 +1489,22 @@ class BiometricEmbeddingIndex:
     ],
   },
 ];
+
+/* ---- Precomputed lookups (built once at module load) ---- */
+export const postsBySlug = new Map(techBlogPosts.map((p) => [p.slug, p]));
+
+/** slug -> { fields: lowercase search fields, minutes: parsed read time } */
+export const blogSearchIndex = new Map(
+  techBlogPosts.map((p) => [
+    p.slug,
+    {
+      fields: [
+        p.title.toLowerCase(),
+        p.subtitle.toLowerCase(),
+        p.summary.toLowerCase(),
+        ...p.tags.map((t) => t.toLowerCase()),
+      ],
+      minutes: parseInt(p.readTime) || 10,
+    },
+  ])
+);

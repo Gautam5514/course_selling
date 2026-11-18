@@ -14,7 +14,6 @@ const userSchema = new Schema(
       unique: true,
       lowercase: true,
       trim: true,
-      index: true,
     },
     name: { type: String, trim: true },
     // Absent for accounts created through Google sign-in (they have no password).

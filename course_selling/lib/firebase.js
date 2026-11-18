@@ -1,7 +1,5 @@
 "use client";
 
-import { initializeApp, getApps } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 
 /**
  * Firebase is used only for the Google sign-in popup. The resulting ID token
@@ -17,8 +15,9 @@ const firebaseConfig = {
 
 export const googleSignInEnabled = Boolean(firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.projectId && firebaseConfig.appId);
 
-function app() {
-  return getApps()[0] ?? initializeApp(firebaseConfig);
+async function loadFirebase() {
+  const [{ initializeApp, getApps }, authMod] = await Promise.all([import("firebase/app"), import("firebase/auth")]);
+  return { app: getApps()[0] ?? initializeApp(firebaseConfig), ...authMod };
 }
 
 export class GoogleSignInCancelled extends Error {
@@ -31,7 +30,8 @@ export class GoogleSignInCancelled extends Error {
 /** Open the Google popup and return a Firebase ID token for our backend. */
 export async function getGoogleIdToken() {
   if (!googleSignInEnabled) throw new Error("Google sign-in is not configured.");
-  const auth = getAuth(app());
+  const { app, getAuth, GoogleAuthProvider, signInWithPopup, signOut } = await loadFirebase();
+  const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
   provider.setCustomParameters({ prompt: "select_account" });
   try {

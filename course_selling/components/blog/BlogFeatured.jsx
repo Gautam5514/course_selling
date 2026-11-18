@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Calendar, Clock, Sparkles, ChevronRight } from "lucide-react";
 import LikeButton from "@/components/LikeButton";
-import { techBlogPosts } from "@/data/blogsData";
+import { techBlogPosts, postsBySlug } from "@/data/blogsData";
 
 // Selected premier featured handbooks
 const FEATURED_SLUGS = [
@@ -19,7 +19,7 @@ export default function BlogFeatured() {
   const [selectedSlug, setSelectedSlug] = useState(FEATURED_SLUGS[0]);
 
   const featured =
-    techBlogPosts.find((p) => p.slug === selectedSlug) || techBlogPosts[0];
+    postsBySlug.get(selectedSlug) || techBlogPosts[0];
 
   if (!featured) return null;
 
@@ -38,7 +38,7 @@ export default function BlogFeatured() {
           {/* Quick Switch Pills */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
             {FEATURED_SLUGS.map((slug) => {
-              const post = techBlogPosts.find((p) => p.slug === slug);
+              const post = postsBySlug.get(slug);
               if (!post) return null;
               const isSelected = post.slug === featured.slug;
               return (
@@ -121,9 +121,11 @@ export default function BlogFeatured() {
 
             <div className="mt-8 pt-6 border-t border-stone-100 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <img
+                <Image
                   src={featured.author.avatar}
                   alt={featured.author.name}
+                  width={40}
+                  height={40}
                   className="w-10 h-10 rounded-full object-cover ring-2 ring-emerald-600/30"
                 />
                 <div>

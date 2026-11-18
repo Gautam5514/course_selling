@@ -1,5 +1,3 @@
-"use client";
-
 export default function Partners() {
   return (
     <section className="bg-[#062c23] py-9 sm:py-11 border-y border-emerald-950 overflow-hidden">

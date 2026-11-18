@@ -167,14 +167,14 @@ export function fieldErrors(err) {
   return out;
 }
 
-async function request(path, { method = "GET", body, headers, signal, cache, next } = {}) {
+async function request(path, { method = "GET", body, headers, signal, cache, next, timeoutMs = 60000 } = {}) {
   const url = `${API_BASE_URL}${path.startsWith("/") ? "" : "/"}${path}`;
   const visitorId = getVisitorId(); // null on the server
 
   // Render's free tier sleeps and needs ~50s to wake, so give a cold start
   // room (60s) instead of reporting a failure after 15s.
   const controller = signal ? null : new AbortController();
-  const timer = controller ? setTimeout(() => controller.abort(), 60000) : null;
+  const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
   const token = getToken();
 
   let res;
@@ -261,6 +261,46 @@ function upload(path, file, { onProgress, fieldName = "file", timeoutMs = 10 * 6
   });
 }
 
+// ─── Client-side read cache ──────────────────────────────────────────────────
+// Map-based TTL cache + in-flight promise Map (request de-duplication) with
+// stale-while-revalidate: fresh hits are instant, stale hits return instantly
+// and refresh in the background, and N components asking for the same URL
+// share ONE network call. Browser only; SSR goes through Next's fetch cache.
+const readStore = new Map(); // key -> { value, at }
+const readInflight = new Map(); // key -> Promise
+
+function cachedGet(key, fetcher, { ttl = 30_000, swr = 300_000 } = {}) {
+  if (typeof window === "undefined") return fetcher();
+  const hit = readStore.get(key);
+  const age = hit ? Date.now() - hit.at : Infinity;
+  const refresh = () => {
+    let p = readInflight.get(key);
+    if (!p) {
+      p = fetcher()
+        .then((v) => {
+          readStore.set(key, { value: v, at: Date.now() });
+          return v;
+        })
+        .finally(() => readInflight.delete(key));
+      readInflight.set(key, p);
+    }
+    return p;
+  };
+  if (age < ttl) return Promise.resolve(hit.value);
+  if (age < swr) {
+    refresh().catch(() => {});
+    return Promise.resolve(hit.value);
+  }
+  return refresh();
+}
+
+function invalidateReads(prefix) {
+  for (const k of readStore.keys()) if (k.startsWith(prefix)) readStore.delete(k);
+}
+
+// Per-visitor/user entries must never leak between identities.
+const identity = () => `${getVisitorId() || "-"}|${getToken() ? "m" : "a"}`;
+
 function qs(params = {}) {
   const p = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) {
@@ -283,7 +323,9 @@ export const api = {
     if (q) params.set("q", q);
     if (featured !== undefined) params.set("featured", String(Boolean(featured)));
     const qs = params.toString();
-    return request(`/api/public/notes${qs ? `?${qs}` : ""}`, opts);
+    const path = `/api/public/notes${qs ? `?${qs}` : ""}`;
+    if (Object.keys(opts).length) return request(path, opts);
+    return cachedGet(`notes:${path}`, () => request(path), { ttl: 30_000 });
   },
 
   /** Signed, short-lived links to a note's PDF and attachments (sign-in required). */
@@ -308,28 +350,44 @@ export const api = {
    */
   getNoteStats(slugs, opts = {}) {
     const list = Array.isArray(slugs) ? slugs : [slugs];
-    return request(`/api/public/notes/stats?slugs=${encodeURIComponent(list.join(","))}`, {
-      cache: "no-store",
-      ...opts,
-    });
+    // Sorted so the same set of slugs always maps to the same cache key.
+    const path = `/api/public/notes/stats?slugs=${encodeURIComponent([...list].sort().join(","))}`;
+    if (Object.keys(opts).length) return request(path, { cache: "no-store", ...opts });
+    return cachedGet(`stats:${identity()}:${path}`, () => request(path, { cache: "no-store" }), { ttl: 15_000, swr: 60_000 });
   },
 
   /** Toggle this visitor's like. Returns the updated stats object. */
-  likeNote(slug) {
-    return request(`/api/public/notes/${encodeURIComponent(slug)}/like`, { method: "POST" });
+  async likeNote(slug) {
+    try {
+      return await request(`/api/public/notes/${encodeURIComponent(slug)}/like`, { method: "POST" });
+    } finally {
+      invalidateReads("stats:");
+      invalidateReads("notes:");
+    }
   },
 
   /** Count a download (deduped per visitor per day). Returns the updated stats object. */
-  downloadNote(slug) {
-    return request(`/api/public/notes/${encodeURIComponent(slug)}/download`, { method: "POST" });
+  async downloadNote(slug) {
+    try {
+      return await request(`/api/public/notes/${encodeURIComponent(slug)}/download`, { method: "POST" });
+    } finally {
+      invalidateReads("stats:");
+      invalidateReads("notes:");
+    }
   },
 
   /** Set / change my 1-5 rating (+ optional written review). Returns the updated stats object. */
-  rateNote(slug, value, review) {
-    return request(`/api/public/notes/${encodeURIComponent(slug)}/rate`, {
-      method: "POST",
-      body: typeof review === "string" ? { value, review } : { value },
-    });
+  async rateNote(slug, value, review) {
+    try {
+      return await request(`/api/public/notes/${encodeURIComponent(slug)}/rate`, {
+        method: "POST",
+        body: typeof review === "string" ? { value, review } : { value },
+      });
+    } finally {
+      invalidateReads("stats:");
+      invalidateReads("notes:");
+      invalidateReads("reviews:");
+    }
   },
 
   /** Written reviews for one note, newest first. Public. */
@@ -339,12 +397,13 @@ export const api = {
 
   /** Latest written reviews across all notes (home page testimonials). Public. */
   getLatestReviews(limit = 9) {
-    return request(`/api/public/notes/reviews?limit=${limit}`, { cache: "no-store" });
+    return request(`/api/public/notes/reviews?limit=${limit}`, { next: { revalidate: 120 }, timeoutMs: 12000 });
   },
 
   // ─── Auth (students + admins share the same cookie session) ─────────────
   me(opts = {}) {
-    return request("/api/auth/me", { cache: "no-store", ...opts });
+    // Short timeout: the UI must not hang on a sleeping backend (AuthProvider retries).
+    return request("/api/auth/me", { cache: "no-store", timeoutMs: 8000, ...opts });
   },
   async login(email, password) {
     const res = await request("/api/auth/login", { method: "POST", body: { email, password } });

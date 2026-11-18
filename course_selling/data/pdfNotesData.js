@@ -355,3 +355,19 @@ export const pdfNotesList = [
     ],
   },
 ];
+
+/* ---- Precomputed lookups (built once at module load) ---- */
+export const pdfById = new Map(pdfNotesList.map((p) => [p.id, p]));
+
+/** id -> lowercase search fields */
+export const pdfSearchIndex = new Map(
+  pdfNotesList.map((p) => [
+    p.id,
+    [
+      p.title.toLowerCase(),
+      p.description.toLowerCase(),
+      ...p.tags.map((t) => t.toLowerCase()),
+      p.author.toLowerCase(),
+    ],
+  ])
+);

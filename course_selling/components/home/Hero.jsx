@@ -179,7 +179,6 @@ export default function Hero() {
               <Image
                 width={30}
                 height={30}
-                unoptimized
                 className="inline-block h-7 w-7 rounded-full ring-2 ring-[#0b382d] object-cover"
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80"
                 alt="Developer 1"
@@ -187,7 +186,6 @@ export default function Hero() {
               <Image
                 width={30}
                 height={30}
-                unoptimized
                 className="inline-block h-7 w-7 rounded-full ring-2 ring-[#0b382d] object-cover"
                 src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80"
                 alt="Developer 2"
@@ -195,7 +193,6 @@ export default function Hero() {
               <Image
                 width={30}
                 height={30}
-                unoptimized
                 className="inline-block h-7 w-7 rounded-full ring-2 ring-[#0b382d] object-cover"
                 src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&auto=format&fit=crop&q=80"
                 alt="Developer 3"

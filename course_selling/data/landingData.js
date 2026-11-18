@@ -338,3 +338,17 @@ export const blogArticles = [
     readTime: "5 min read",
   },
 ];
+
+/* ---- Precomputed lookups (built once at module load) ---- */
+export const coursesById = new Map(popularCourses.map((c) => [c.id, c]));
+// First course wins per pdfId (matches Array.find semantics).
+export const coursesByPdfId = new Map();
+for (const c of popularCourses) if (!coursesByPdfId.has(c.pdfId)) coursesByPdfId.set(c.pdfId, c);
+
+/** id -> { title, summary } lowercased for search */
+export const courseSearchIndex = new Map(
+  popularCourses.map((c) => [
+    c.id,
+    { title: c.title.toLowerCase(), summary: c.summary.toLowerCase() },
+  ])
+);

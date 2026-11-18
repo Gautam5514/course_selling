@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Sparkles, FileText, Code2, BookOpen, GitBranch } from "lucide-react";
 import { popularCourses } from "@/data/landingData";
-import { projectsList } from "@/data/legacyProjectsData";
+import { projectsById } from "@/data/legacyProjectsData";
+import { useDebouncedValue } from "@/lib/useDebouncedValue";
 import { RightEdgeConcentricRings } from "@/components/DecorativeShapes";
 import LikeButton from "@/components/LikeButton";
 import RatingBadge from "@/components/RatingBadge";
@@ -152,19 +153,33 @@ export default function FeaturedCourses() {
     }
   };
 
-  const filtered = (cards ?? []).filter((c) => {
-    const matchesCategory = activeCategory === "All Notes" || c.category === activeCategory;
-    const query = searchQuery.trim().toLowerCase();
-    const matchesSearch =
-      query === "" || c.title.toLowerCase().includes(query) || c.tagline.toLowerCase().includes(query) || c.category.toLowerCase().includes(query);
-    return matchesCategory && matchesSearch;
-  });
+  const debouncedQuery = useDebouncedValue(searchQuery, 150);
+
+  // Lowercased search haystacks, computed once per card list.
+  const searchable = useMemo(
+    () =>
+      (cards ?? []).map((c) => ({
+        card: c,
+        fields: [c.title.toLowerCase(), c.tagline.toLowerCase(), c.category.toLowerCase()],
+      })),
+    [cards]
+  );
+
+  const filtered = useMemo(() => {
+    const query = debouncedQuery.trim().toLowerCase();
+    return searchable
+      .filter(({ card, fields }) => {
+        const matchesCategory = activeCategory === "All Notes" || card.category === activeCategory;
+        return matchesCategory && (query === "" || fields.some((f) => f.includes(query)));
+      })
+      .map(({ card }) => card);
+  }, [searchable, activeCategory, debouncedQuery]);
 
   // The note overview is public; the reader itself asks for sign-in.
   const handleOpenPdf = (card) => router.push(card.href);
 
   const handleOpenProject = (card) => {
-    const project = card.projectId && projectsList.find((p) => p.id === card.projectId);
+    const project = card.projectId && projectsById.get(card.projectId);
     if (project) {
       setSelectedProject(project);
       return;

@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
+    ],
+  },
   // Project READMEs are read from disk at render time; make sure they ship
   // with the server bundle so hourly revalidation can re-render the pages.
   outputFileTracingIncludes: {

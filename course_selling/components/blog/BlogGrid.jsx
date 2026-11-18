@@ -1,31 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Calendar, Clock, Sparkles, SlidersHorizontal, ArrowUpDown } from "lucide-react";
 import { LeftEdgeConcentricRings, StarburstDoodle } from "@/components/DecorativeShapes";
 import LikeButton from "@/components/LikeButton";
-import { techBlogPosts } from "@/data/blogsData";
+import { techBlogPosts, blogSearchIndex } from "@/data/blogsData";
+import { useDebouncedValue } from "@/lib/useDebouncedValue";
 
 export default function BlogGrid({ activeCategory, searchQuery }) {
   const [sortBy, setSortBy] = useState("latest"); // 'latest' | 'popular' | 'quick'
   const [selectedTag, setSelectedTag] = useState(null);
 
-  const filtered = techBlogPosts
+  const debouncedQuery = useDebouncedValue(searchQuery, 150);
+
+  const filtered = useMemo(() => {
+    const query = debouncedQuery.trim().toLowerCase();
+    return techBlogPosts
     .filter((a) => {
       const matchesCat =
         activeCategory === "All Articles" ||
         activeCategory === "All Topics" ||
         a.category === activeCategory;
 
-      const query = searchQuery.trim().toLowerCase();
       const matchesQuery =
         query === "" ||
-        a.title.toLowerCase().includes(query) ||
-        a.subtitle.toLowerCase().includes(query) ||
-        a.summary.toLowerCase().includes(query) ||
-        a.tags.some((tag) => tag.toLowerCase().includes(query));
+        blogSearchIndex.get(a.slug).fields.some((f) => f.includes(query));
 
       const matchesTag = !selectedTag || a.tags.includes(selectedTag);
 
@@ -36,13 +37,12 @@ export default function BlogGrid({ activeCategory, searchQuery }) {
         return (b.likes || 0) - (a.likes || 0);
       }
       if (sortBy === "quick") {
-        const timeA = parseInt(a.readTime) || 10;
-        const timeB = parseInt(b.readTime) || 10;
-        return timeA - timeB;
+        return blogSearchIndex.get(a.slug).minutes - blogSearchIndex.get(b.slug).minutes;
       }
       // default: latest (preserve original curated order or date)
       return 0;
     });
+  }, [activeCategory, debouncedQuery, selectedTag, sortBy]);
 
   return (
     <section className="py-16 sm:py-20 bg-white relative overflow-hidden">
@@ -196,9 +196,11 @@ export default function BlogGrid({ activeCategory, searchQuery }) {
 
                   <div className="mt-6 pt-4 border-t border-stone-200/60 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <img
+                      <Image
                         src={item.author.avatar}
                         alt={item.author.name}
+                        width={28}
+                        height={28}
                         className="w-7 h-7 rounded-full object-cover ring-1 ring-emerald-600/30"
                       />
                       <div>

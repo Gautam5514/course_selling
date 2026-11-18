@@ -1,3 +1,4 @@
+import { publicCache } from '../utils/ttlCache.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { sendData, ApiError } from '../utils/apiError.js';
 import { Note } from '../models/Note.js';
@@ -37,14 +38,14 @@ function statsFor(note, interaction) {
 }
 
 async function findPublicNote(slug) {
-  const note = await Note.findOne({ slug, ...PUBLIC_FILTER });
+  const note = await Note.findOne({ slug, ...PUBLIC_FILTER }).select('slug likes downloads pages ratingSum ratingCount');
   if (!note) throw ApiError.notFound('Note not found');
   return note;
 }
 
 async function respondWithFresh(res, noteId, visitorId) {
   const [note, interaction] = await Promise.all([
-    Note.findById(noteId),
+    Note.findById(noteId).select('slug likes downloads pages ratingSum ratingCount'),
     visitorId ? NoteInteraction.findOne({ note: noteId, visitor: visitorId }) : null,
   ]);
   if (!note) throw ApiError.notFound('Note not found');
@@ -59,7 +60,7 @@ function isDuplicate(err) {
 // ─── GET /api/public/notes/stats?slugs=a,b,c ─────────────────────────────────
 export const getNoteStats = asyncHandler(async (req, res) => {
   const { slugs } = req.query;
-  const notes = await Note.find({ slug: { $in: slugs }, ...PUBLIC_FILTER });
+  const notes = await Note.find({ slug: { $in: slugs }, ...PUBLIC_FILTER }).select('slug likes downloads pages ratingSum ratingCount');
 
   let mine = new Map();
   if (req.visitorId && notes.length) {
@@ -156,30 +157,38 @@ export const rateNote = asyncHandler(async (req, res) => {
 // ─── GET /api/public/notes/reviews ───────────────────────────────────────────
 // Latest written reviews across all live notes (home page testimonials). Public.
 export const listLatestReviews = asyncHandler(async (req, res) => {
-  const notes = await Note.find(PUBLIC_FILTER).select('title slug category');
-  const byId = new Map(notes.map((n) => [n._id.toString(), n]));
-  const rows = await NoteInteraction.find({ note: { $in: notes.map((n) => n._id) }, rating: { $ne: null }, review: { $nin: [null, ''] } })
-    .sort({ reviewedAt: -1, updatedAt: -1 })
-    .limit(req.query.limit);
-  const ids = rows.map((r) => (r.visitor.startsWith('user:') ? r.visitor.slice(5) : null)).filter(Boolean);
-  const users = ids.length ? await User.find({ _id: { $in: ids } }).select('name') : [];
-  const names = new Map(users.map((u) => [u._id.toString(), u.name]));
-  return sendData(
-    res,
-    rows.map((r) => {
-      const n = byId.get(r.note.toString());
-      return {
-        id: r._id.toString(),
-        name: names.get(r.visitor.slice(5)) || 'A member',
-        rating: r.rating,
-        review: r.review,
-        at: r.reviewedAt || r.updatedAt,
-        note: n ? { slug: n.slug, title: n.title, category: n.category ?? null } : null,
-      };
-    }),
-    200,
-    { total: rows.length }
-  );
+  const limit = req.query.limit;
+  const items = await publicCache.wrap(`reviews:latest:${limit}`, async () => {
+    // Newest reviews first, bounded by `limit` (no scan of every note).
+    // Over-fetch a little: reviews of unpublished notes are dropped below.
+    const rows = await NoteInteraction.find({ rating: { $ne: null }, review: { $nin: [null, ''] } })
+      .sort({ reviewedAt: -1, updatedAt: -1 })
+      .limit(limit * 2)
+      .lean();
+    const userIds = rows.map((r) => (r.visitor.startsWith('user:') ? r.visitor.slice(5) : null)).filter(Boolean);
+    const [notes, users] = await Promise.all([
+      Note.find({ _id: { $in: rows.map((r) => r.note) }, ...PUBLIC_FILTER }).select('title slug category').lean(),
+      userIds.length ? User.find({ _id: { $in: userIds } }).select('name').lean() : [],
+    ]);
+    const byId = new Map(notes.map((n) => [n._id.toString(), n]));
+    const names = new Map(users.map((u) => [u._id.toString(), u.name]));
+    return rows
+      .filter((r) => byId.has(r.note.toString()))
+      .slice(0, limit)
+      .map((r) => {
+        const n = byId.get(r.note.toString());
+        return {
+          id: r._id.toString(),
+          name: names.get(r.visitor.slice(5)) || 'A member',
+          rating: r.rating,
+          review: r.review,
+          at: r.reviewedAt || r.updatedAt,
+          note: { slug: n.slug, title: n.title, category: n.category ?? null },
+        };
+      });
+  });
+  res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=120');
+  return sendData(res, items, 200, { total: items.length });
 });
 
 // ─── GET /api/public/notes/:slug/reviews ─────────────────────────────────────

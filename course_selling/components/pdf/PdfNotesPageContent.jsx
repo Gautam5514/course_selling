@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   FileText,
   Search,
@@ -12,7 +12,8 @@ import {
   Clock,
   Layers,
 } from "lucide-react";
-import { pdfCategories, pdfNotesList } from "@/data/pdfNotesData";
+import { pdfCategories, pdfNotesList, pdfSearchIndex } from "@/data/pdfNotesData";
+import { useDebouncedValue } from "@/lib/useDebouncedValue";
 import LikeButton from "@/components/LikeButton";
 import { useRouter } from "next/navigation";
 import { useAuth, loginHref } from "@/components/AuthProvider";
@@ -30,22 +31,23 @@ export default function PdfNotesPageContent() {
     router.push(user ? href : loginHref(href));
   };
 
-  const filteredPdfs = pdfNotesList
-    .filter((pdf) => {
-      const matchesCategory =
-        activeCategory === "All Notes" || pdf.category === activeCategory;
-      const matchesSearch =
-        pdf.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        pdf.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        pdf.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        pdf.author.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
-    })
-    .sort((a, b) => {
-      if (sortBy === "likes") return (b.likes || 0) - (a.likes || 0);
-      if (sortBy === "pages") return (b.pages || 0) - (a.pages || 0);
-      return a.title.localeCompare(b.title);
-    });
+  const debouncedQuery = useDebouncedValue(searchQuery, 150);
+
+  const filteredPdfs = useMemo(() => {
+    const query = debouncedQuery.toLowerCase();
+    return pdfNotesList
+      .filter((pdf) => {
+        const matchesCategory =
+          activeCategory === "All Notes" || pdf.category === activeCategory;
+        const matchesSearch = pdfSearchIndex.get(pdf.id).some((f) => f.includes(query));
+        return matchesCategory && matchesSearch;
+      })
+      .sort((a, b) => {
+        if (sortBy === "likes") return (b.likes || 0) - (a.likes || 0);
+        if (sortBy === "pages") return (b.pages || 0) - (a.pages || 0);
+        return a.title.localeCompare(b.title);
+      });
+  }, [activeCategory, debouncedQuery, sortBy]);
 
   const handleInstantDownload = (pdf) => {
     const docTitle = pdf.title || "Handbook";

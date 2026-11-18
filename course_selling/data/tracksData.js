@@ -403,3 +403,19 @@ export const popularTracksList = [
     ],
   },
 ];
+
+/* ---- Precomputed lookups (built once at module load) ---- */
+export const tracksBySlug = new Map(popularTracksList.map((t) => [t.slug, t]));
+
+/** slug -> lowercase search fields */
+export const trackSearchIndex = new Map(
+  popularTracksList.map((t) => [
+    t.slug,
+    {
+      title: t.title.toLowerCase(),
+      tagline: t.tagline.toLowerCase(),
+      name: t.name.toLowerCase(),
+      tools: t.tools.map((tool) => tool.toLowerCase()),
+    },
+  ])
+);

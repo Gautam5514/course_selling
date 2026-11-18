@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -16,13 +17,13 @@ import { useAuth, loginHref } from "@/components/AuthProvider";
 import { useToast } from "@/components/ui/ToastProvider";
 import { api, ApiError, absoluteUrl, friendlyMessage, formatBytes, isStaff } from "@/lib/api";
 import { accentOf, CardIcon } from "@/lib/cardTheme";
-import { pdfNotesList } from "@/data/pdfNotesData";
-import { popularCourses } from "@/data/landingData";
+import { pdfById } from "@/data/pdfNotesData";
+import { coursesById, coursesByPdfId } from "@/data/landingData";
 
 /** Build the reader model from an API note (chapters fall back to the built-in catalog). */
 function fromNote(n, member) {
-  const legacy = popularCourses.find((c) => c.id === n.slug);
-  const catalog = legacy ? pdfNotesList.find((p) => p.id === legacy.pdfId) : null;
+  const legacy = coursesById.get(n.slug);
+  const catalog = legacy ? pdfById.get(legacy.pdfId) : null;
   // The API already strips chapter bodies / code for visitors; apply the same
   // rule to the built-in catalog copy so nothing leaks client-side.
   const rawChapters = n.chapters?.length ? n.chapters : catalog?.chapters ?? [];
@@ -61,7 +62,7 @@ function fromCatalog(pdf, member) {
     codeCount: 0,
     attachmentCount: 0,
     id: null,
-    slug: popularCourses.find((c) => c.pdfId === pdf.id)?.id ?? null,
+    slug: coursesByPdfId.get(pdf.id)?.id ?? null,
     title: pdf.title,
     category: pdf.category,
     tagline: "",
@@ -126,7 +127,7 @@ export default function PdfReaderPage({ id }) {
       .then(({ data }) => !cancelled && setDoc(fromNote(data, member)))
       .catch((err) => {
         if (cancelled) return;
-        const pdf = pdfNotesList.find((p) => p.id === id);
+        const pdf = pdfById.get(id);
         if (pdf) {
           setDoc(fromCatalog(pdf, member));
           return;
@@ -438,8 +439,8 @@ export default function PdfReaderPage({ id }) {
           {doc.instructor?.name && (
             <div className="flex items-center gap-3">
               {doc.instructor.avatar ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={doc.instructor.avatar} alt="" className="w-10 h-10 rounded-full object-cover border border-stone-200" />
+                // Avatar URL comes from the API (arbitrary host), so skip the optimizer.
+                <Image src={doc.instructor.avatar} alt="" width={40} height={40} unoptimized className="w-10 h-10 rounded-full object-cover border border-stone-200" />
               ) : (
                 <span className="w-10 h-10 rounded-full bg-[#093c33] text-white font-extrabold flex items-center justify-center">{doc.instructor.name.slice(0, 1)}</span>
               )}

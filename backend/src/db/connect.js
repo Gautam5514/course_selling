@@ -22,7 +22,11 @@ export async function connectDB(uri = config.mongoUri) {
 
   await mongoose.connect(uri, {
     serverSelectionTimeoutMS: 10000,
-    autoIndex: !config.isProd, // build indexes in dev; manage explicitly in prod
+    maxPoolSize: 10,
+    minPoolSize: 1, // keep one warm socket to Atlas
+    // Build declared indexes (users.email, notes.slug, ...) in the background;
+    // without this, production never creates them and lookups scan collections.
+    autoIndex: true,
     // Node 20+ adds per-attempt close/end listeners to pooled TLS sockets when
     // Happy-Eyeballs (autoSelectFamily) is on, producing a false-positive
     // "MaxListenersExceededWarning: 11 end listeners added to [TLSSocket]"

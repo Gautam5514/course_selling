@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BlogPostContent from "@/components/blog/BlogPostContent";
-import { techBlogPosts } from "@/data/blogsData";
+import { techBlogPosts, postsBySlug } from "@/data/blogsData";
 
 export async function generateStaticParams() {
   return techBlogPosts.map((post) => ({
@@ -12,7 +12,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const post = techBlogPosts.find((p) => p.slug === slug);
+  const post = postsBySlug.get(slug);
 
   if (!post) {
     return {
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }) {
 
 export default async function BlogPostPage({ params }) {
   const { slug } = await params;
-  const post = techBlogPosts.find((p) => p.slug === slug);
+  const post = postsBySlug.get(slug);
 
   if (!post) {
     notFound();

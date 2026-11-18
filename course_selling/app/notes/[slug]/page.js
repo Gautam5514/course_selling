@@ -1,21 +1,21 @@
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import NoteDetailContent from "@/components/notes/NoteDetailContent";
 import { api, ApiError } from "@/lib/api";
 
-// Always fetch fresh from the backend (content is authored dynamically).
-export const dynamic = "force-dynamic";
-
-async function fetchNote(slug) {
+// Anonymous server fetch, cached 60s (and de-duplicated between
+// generateMetadata and the page) so a cold backend isn't hit per view.
+const fetchNote = cache(async (slug) => {
   try {
-    const { data } = await api.getNote(slug, { cache: "no-store" });
+    const { data } = await api.getNote(slug, { next: { revalidate: 60 } });
     return data;
   } catch (err) {
     if (err instanceof ApiError && err.status === 404) return null;
     throw err; // real errors (backend down, 500) surface as an error page
   }
-}
+});
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;

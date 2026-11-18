@@ -1,3 +1,4 @@
+import { userCache } from '../auth/middleware.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { sendData, ApiError } from '../utils/apiError.js';
 import { Note } from '../models/Note.js';
@@ -105,6 +106,7 @@ export const updateUserRole = asyncHandler(async (req, res) => {
 
   user.role = role;
   await user.save();
+  userCache.map.delete(String(user._id));
   return sendData(res, user.toSafeJSON());
 });
 
@@ -119,5 +121,6 @@ export const deleteUser = asyncHandler(async (req, res) => {
     if (admins <= 1) throw ApiError.badRequest('There must always be at least one administrator.');
   }
   await user.deleteOne();
+  userCache.map.delete(String(user._id));
   return sendData(res, { ok: true });
 });

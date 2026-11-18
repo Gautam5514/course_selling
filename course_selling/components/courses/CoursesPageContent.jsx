@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -20,10 +20,11 @@ import {
 } from "lucide-react";
 import CoursesHero from "./CoursesHero";
 import CoursesFaqSection from "./CoursesFaqSection";
-import { popularTracksList } from "@/data/tracksData";
-import { popularCourses, courseCategories } from "@/data/landingData";
-import { pdfNotesList } from "@/data/pdfNotesData";
-import { projectsList } from "@/data/legacyProjectsData";
+import { popularTracksList, trackSearchIndex } from "@/data/tracksData";
+import { useDebouncedValue } from "@/lib/useDebouncedValue";
+import { popularCourses, courseCategories, courseSearchIndex } from "@/data/landingData";
+import { pdfNotesList, pdfById } from "@/data/pdfNotesData";
+import { projectsList, projectsById } from "@/data/legacyProjectsData";
 import LikeButton from "@/components/LikeButton";
 import PdfPreviewModal from "@/components/PdfPreviewModal";
 import ProjectDetailModal from "@/components/ProjectDetailModal";
@@ -36,44 +37,49 @@ export default function CoursesPageContent() {
   const [selectedProject, setSelectedProject] = useState(null);
 
   // Filter career tracks
-  const filteredTracks = popularTracksList.filter((track) => {
-    const matchesCategory =
-      activeCategory === "All Tracks" ||
-      track.name.toLowerCase().includes(activeCategory.toLowerCase());
-    const matchesSearch =
-      track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      track.tagline.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      track.tools.some((tool) =>
-        tool.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    return matchesCategory && matchesSearch;
-  });
+  const debouncedQuery = useDebouncedValue(searchQuery, 150);
+
+  const filteredTracks = useMemo(() => {
+    const query = debouncedQuery.toLowerCase();
+    const cat = activeCategory.toLowerCase();
+    return popularTracksList.filter((track) => {
+      const idx = trackSearchIndex.get(track.slug);
+      const matchesCategory = activeCategory === "All Tracks" || idx.name.includes(cat);
+      const matchesSearch =
+        idx.title.includes(query) ||
+        idx.tagline.includes(query) ||
+        idx.tools.some((tool) => tool.includes(query));
+      return matchesCategory && matchesSearch;
+    });
+  }, [activeCategory, debouncedQuery]);
 
   // Filter modular masterclasses
-  const filteredCourses = popularCourses.filter((course) => {
-    const matchesCategory =
-      activeCategory === "All Tracks" || course.category === activeCategory;
-    const matchesSearch =
-      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.summary.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const filteredCourses = useMemo(() => {
+    const query = debouncedQuery.toLowerCase();
+    return popularCourses.filter((course) => {
+      const idx = courseSearchIndex.get(course.id);
+      const matchesCategory =
+        activeCategory === "All Tracks" || course.category === activeCategory;
+      const matchesSearch = idx.title.includes(query) || idx.summary.includes(query);
+      return matchesCategory && matchesSearch;
+    });
+  }, [activeCategory, debouncedQuery]);
 
   const handleOpenPdfForCourse = (course) => {
     const matched =
-      pdfNotesList.find((p) => p.id === course.pdfId) || pdfNotesList[0];
+      pdfById.get(course.pdfId) || pdfNotesList[0];
     setSelectedPdf(matched);
   };
 
   const handleOpenProjectForCourse = (course) => {
     const matched =
-      projectsList.find((p) => p.id === course.projectId) || projectsList[0];
+      projectsById.get(course.projectId) || projectsList[0];
     setSelectedProject(matched);
   };
 
   const handleOpenPdfForTrack = (track) => {
     const matched =
-      pdfNotesList.find((p) => p.id === track.pdfResource?.id) || pdfNotesList[0];
+      pdfById.get(track.pdfResource?.id) || pdfNotesList[0];
     setSelectedPdf(matched);
   };
 
