@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { popularTracksList } from "@/data/tracksData";
 import { pdfNotesList } from "@/data/pdfNotesData";
-import { projectsList } from "@/data/projectsData";
+import { projectsList } from "@/data/legacyProjectsData";
 import LikeButton from "@/components/LikeButton";
 import PdfPreviewModal from "@/components/PdfPreviewModal";
 import ProjectDetailModal from "@/components/ProjectDetailModal";

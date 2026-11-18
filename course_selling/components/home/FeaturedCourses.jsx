@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Sparkles, FileText, Code2, BookOpen, GitBranch } from "lucide-react";
 import { popularCourses } from "@/data/landingData";
-import { projectsList } from "@/data/projectsData";
+import { projectsList } from "@/data/legacyProjectsData";
 import { RightEdgeConcentricRings } from "@/components/DecorativeShapes";
 import LikeButton from "@/components/LikeButton";
 import RatingBadge from "@/components/RatingBadge";

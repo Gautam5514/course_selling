@@ -1,0 +1,299 @@
+/* Gopo Workspace notes: print theme (A4). Colours follow the site brand. */
+:root {
+  --ink: #0f2820;
+  --ink-soft: #40534d;
+  --muted: #7a8985;
+  --brand: #0c3d32;
+  --brand-deep: #082b24;
+  --orange: #eb793e;
+  --paper: #ffffff;
+  --cream: #faf7f2;
+  --line: #e6e0d6;
+  --accent: #0c3d32; /* overridden per note */
+  --accent-soft: #e8f3ef;
+  --code-bg: #0f211d;
+}
+
+@page {
+  size: A4;
+  margin: 20mm 17mm 20mm 17mm;
+  @bottom-left {
+    content: "gopo. Workspace"; /* build.mjs appends the note title */
+    font-family: "Plus Jakarta Sans", "Helvetica Neue", Arial, sans-serif;
+    font-size: 7.5pt;
+    color: #7a8985;
+  }
+  @bottom-right {
+    content: counter(page);
+    font-family: "Plus Jakarta Sans", "Helvetica Neue", Arial, sans-serif;
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: #0c3d32;
+  }
+}
+@page cover {
+  margin: 0;
+  @bottom-left { content: none; }
+  @bottom-right { content: none; }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body {
+  margin: 0;
+  font-family: "Plus Jakarta Sans", "Helvetica Neue", Arial, sans-serif;
+  font-size: 10.4pt;
+  line-height: 1.62;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+/* ── Cover ─────────────────────────────────────────────── */
+.cover {
+  page: cover;
+  width: 210mm;
+  height: 297mm;
+  background: var(--brand);
+  color: #faf7f2;
+  padding: 24mm 20mm 20mm;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  break-after: page;
+}
+.cover::before {
+  content: "";
+  position: absolute;
+  right: -70mm;
+  top: -60mm;
+  width: 200mm;
+  height: 200mm;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--accent) 0%, transparent 68%);
+  opacity: 0.55;
+}
+.cover::after {
+  content: "";
+  position: absolute;
+  left: -40mm;
+  bottom: -50mm;
+  width: 150mm;
+  height: 150mm;
+  border-radius: 50%;
+  border: 1.2mm solid rgba(250, 247, 242, 0.07);
+  box-shadow: 0 0 0 14mm rgba(250, 247, 242, 0.035);
+}
+.cover > * { position: relative; z-index: 1; }
+.brand { display: flex; align-items: center; gap: 3.5mm; }
+.brand svg { width: 13mm; height: 13mm; }
+.brand-name { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 20pt; letter-spacing: -0.05em; line-height: 1; }
+.brand-name i { color: var(--orange); font-style: normal; }
+.brand-sub { font-size: 6.5pt; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase; opacity: 0.7; margin-top: 1.2mm; }
+.cover-main { margin-top: auto; }
+.cover-kicker {
+  display: inline-block;
+  font-size: 8pt;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--brand-deep);
+  background: var(--orange);
+  padding: 1.6mm 4mm;
+  border-radius: 99px;
+}
+.cover h1 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 54pt;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  font-weight: 800;
+  margin: 8mm 0 6mm;
+}
+.cover-sub { font-size: 14pt; line-height: 1.45; max-width: 140mm; color: rgba(250, 247, 242, 0.86); font-weight: 500; }
+.cover-points { margin: 11mm 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 2.5mm; max-width: 165mm; }
+.cover-points li {
+  font-size: 8.6pt;
+  font-weight: 600;
+  padding: 1.8mm 4mm;
+  border-radius: 99px;
+  border: 0.3mm solid rgba(250, 247, 242, 0.28);
+  background: rgba(250, 247, 242, 0.06);
+}
+.cover-foot {
+  margin-top: 22mm;
+  padding-top: 6mm;
+  border-top: 0.3mm solid rgba(250, 247, 242, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 8.6pt;
+  color: rgba(250, 247, 242, 0.75);
+}
+.cover-foot b { display: block; color: #faf7f2; font-size: 10.5pt; font-weight: 700; }
+
+/* ── Contents ──────────────────────────────────────────── */
+.toc { break-after: page; }
+.eyebrow { font-size: 7.8pt; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: var(--orange); }
+.toc h2 { font-family: "Bricolage Grotesque", sans-serif; font-size: 30pt; letter-spacing: -0.03em; margin: 2mm 0 3mm; border: 0; padding: 0; }
+.toc-intro { color: var(--ink-soft); max-width: 150mm; margin: 0 0 7mm; }
+.toc-list { list-style: none; margin: 0; padding: 0; }
+.toc-list li { break-inside: avoid; border-top: 0.25mm solid var(--line); }
+.toc-list li:last-child { border-bottom: 0.25mm solid var(--line); }
+.toc-list a { display: grid; grid-template-columns: 12mm 1fr 10mm; gap: 3mm; align-items: baseline; padding: 2.7mm 0; color: inherit; text-decoration: none; }
+.toc-num { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 13pt; color: var(--accent); }
+.toc-title { font-weight: 700; font-size: 10.6pt; }
+.toc-title small { display: block; font-weight: 500; font-size: 8.4pt; color: var(--muted); line-height: 1.4; margin-top: 0.4mm; }
+.toc-page { text-align: right; font-weight: 700; font-size: 9.5pt; color: var(--ink-soft); }
+.howto { margin-top: 7mm; display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; break-inside: avoid; }
+.howto div { border-radius: 3mm; padding: 3mm 3.4mm; font-size: 8.2pt; line-height: 1.4; color: var(--ink-soft); background: var(--cream); border: 0.25mm solid var(--line); }
+.howto b { display: block; font-size: 8.4pt; color: var(--ink); margin-bottom: 0.6mm; }
+
+/* ── Chapters ──────────────────────────────────────────── */
+.chapter { break-before: page; }
+.chapter-head {
+  background: var(--brand);
+  color: #faf7f2;
+  border-radius: 5mm;
+  padding: 9mm 9mm 8mm;
+  margin-bottom: 7mm;
+  position: relative;
+  overflow: hidden;
+  break-inside: avoid;
+}
+.chapter-head::after {
+  content: "";
+  position: absolute;
+  right: -22mm;
+  top: -26mm;
+  width: 70mm;
+  height: 70mm;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.5;
+}
+.chapter-head > * { position: relative; z-index: 1; }
+.chapter-label { font-size: 7.8pt; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--orange); }
+.chapter-head h1 { font-family: "Bricolage Grotesque", sans-serif; font-size: 25pt; line-height: 1.08; letter-spacing: -0.03em; margin: 2mm 0 0; font-weight: 800; max-width: 145mm; }
+.chapter-lead { margin: 3.5mm 0 0; font-size: 10.6pt; line-height: 1.5; color: rgba(250, 247, 242, 0.85); max-width: 140mm; }
+
+h2 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 15.5pt;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 8mm 0 2.5mm;
+  padding-left: 3.4mm;
+  border-left: 1.3mm solid var(--orange);
+  break-after: avoid;
+}
+h3 { font-size: 11.4pt; font-weight: 800; margin: 5.5mm 0 1.5mm; color: var(--brand); break-after: avoid; }
+h4 { font-size: 10.2pt; font-weight: 800; margin: 4mm 0 1mm; break-after: avoid; }
+p { margin: 0 0 3mm; orphans: 3; widows: 3; }
+ul, ol { margin: 0 0 3mm; padding-left: 5.5mm; }
+li { margin-bottom: 1.1mm; }
+li::marker { color: var(--accent); font-weight: 700; }
+strong { font-weight: 700; }
+a { color: var(--brand); }
+hr { border: 0; border-top: 0.25mm solid var(--line); margin: 6mm 0; }
+blockquote { margin: 0 0 3mm; padding: 2mm 4mm; border-left: 1mm solid var(--line); color: var(--ink-soft); }
+
+code {
+  font-family: "JetBrains Mono", Menlo, Consolas, monospace;
+  font-size: 0.86em;
+  background: #f1ede5;
+  border-radius: 1mm;
+  padding: 0.2mm 1.2mm;
+  color: #7a3413;
+}
+pre {
+  background: var(--code-bg);
+  color: #e3ece8;
+  border-radius: 3mm;
+  padding: 4mm 4.5mm;
+  margin: 0 0 4mm;
+  font-size: 8.3pt;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  break-inside: avoid;
+  position: relative;
+}
+pre.long { break-inside: auto; }
+pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+pre[data-lang]::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: 0;
+  right: 4mm;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 6.4pt;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand-deep);
+  background: var(--orange);
+  padding: 0.5mm 2.2mm 0.7mm;
+  border-radius: 0 0 1.5mm 1.5mm;
+}
+.hljs-keyword, .hljs-selector-tag, .hljs-built_in, .hljs-name, .hljs-tag { color: #ff9d6c; }
+.hljs-string, .hljs-attr, .hljs-symbol, .hljs-bullet, .hljs-addition { color: #9be3b4; }
+.hljs-title, .hljs-section, .hljs-title.function_, .hljs-title.class_ { color: #7fd1f5; }
+.hljs-number, .hljs-literal, .hljs-type, .hljs-variable, .hljs-template-variable { color: #f6cf7a; }
+.hljs-comment, .hljs-quote, .hljs-meta { color: #7f9a92; font-style: italic; }
+.hljs-attribute, .hljs-property, .hljs-params { color: #d7c3f7; }
+
+table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 0 0 4.5mm; font-size: 9pt; line-height: 1.45; border: 0.25mm solid var(--line); border-radius: 2.5mm; overflow: hidden; break-inside: avoid; }
+th { background: var(--brand); color: #faf7f2; text-align: left; font-weight: 700; padding: 2.2mm 3mm; font-size: 8.6pt; }
+td { padding: 2mm 3mm; border-top: 0.25mm solid var(--line); vertical-align: top; }
+tr:nth-child(even) td { background: var(--cream); }
+td code, th code { font-size: 0.9em; }
+
+/* ── Callouts ──────────────────────────────────────────── */
+.callout { border-radius: 3mm; padding: 3.4mm 4.5mm 1mm; margin: 0 0 4.5mm; break-inside: avoid; border: 0.25mm solid; }
+.callout-title { font-size: 7.6pt; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 1.4mm; }
+.callout p, .callout ul, .callout ol { margin-bottom: 2.4mm; }
+.callout pre { margin-bottom: 2.6mm; }
+.callout.tip { background: #edf7f2; border-color: #bfe0d1; }
+.callout.tip .callout-title { color: #0f6b4c; }
+.callout.warn { background: #fff3ec; border-color: #f6cdb3; }
+.callout.warn .callout-title { color: #c2521b; }
+.callout.interview { background: #f1effb; border-color: #cfc8ef; }
+.callout.interview .callout-title { color: #4b3bb0; }
+.callout.note { background: #f6f3ee; border-color: var(--line); }
+.callout.note .callout-title { color: var(--ink-soft); }
+.callout.example { background: #eef5fb; border-color: #c3dcef; }
+.callout.example .callout-title { color: #17609a; }
+.callout.revise { background: var(--brand); border-color: var(--brand); color: #f3f1ea; padding-top: 4.4mm; }
+.callout.revise .callout-title { color: var(--orange); }
+.callout.revise li::marker { color: var(--orange); }
+.callout.revise code { background: rgba(250, 247, 242, 0.14); color: #ffd3ba; }
+
+/* ── Flow diagram ──────────────────────────────────────── */
+.flow { margin: 1mm 0 5mm; break-inside: avoid; }
+.flow-title { font-size: 7.6pt; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 2mm; }
+.flow-row { display: flex; flex-wrap: wrap; align-items: stretch; gap: 2.5mm 0; }
+.flow-box {
+  flex: 0 1 auto;
+  min-width: 24mm;
+  max-width: 44mm;
+  border-radius: 2.5mm;
+  border: 0.3mm solid var(--brand);
+  background: var(--accent-soft);
+  padding: 2.2mm 3.4mm;
+  font-size: 8.8pt;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.flow-box small { display: block; font-weight: 500; font-size: 7.4pt; color: var(--ink-soft); margin-top: 0.4mm; }
+.flow-arrow { display: flex; align-items: center; padding: 0 1.6mm; color: var(--orange); font-weight: 800; font-size: 12pt; }
+
+.endnote { margin-top: 10mm; text-align: center; color: var(--muted); font-size: 8.6pt; break-inside: avoid; }
+.endnote b { color: var(--brand); }
+.callout .question { font-weight: 800; font-size: 10.6pt; margin-bottom: 1.6mm; }
+/* Code must show the exact characters typed: no ">=" or "--" ligatures. */
+code, pre { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }

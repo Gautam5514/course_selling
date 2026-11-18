@@ -198,3 +198,123 @@ h1, h2, h3, h4, h5, h6 {
 ::-webkit-scrollbar-thumb:hover {
   background: #eb793e;
 }
+
+/* ───────── Project README / architecture documents ─────────
+   Typography for markdown rendered by components/projects/ProjectReadme.jsx */
+.readme {
+  color: #292524;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  overflow-wrap: break-word;
+}
+.readme > :first-child { margin-top: 0; }
+.readme > :last-child { margin-bottom: 0; }
+.readme :is(h1, h2, h3, h4) {
+  color: #111827;
+  font-weight: 800;
+  line-height: 1.25;
+  scroll-margin-top: 6.5rem;
+  text-wrap: balance;
+}
+.readme h1 { font-size: 1.75rem; margin: 0 0 1rem; }
+.readme h2 { font-size: 1.375rem; margin: 2.25rem 0 0.875rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e7e5e4; }
+.readme h3 { font-size: 1.0625rem; margin: 1.75rem 0 0.625rem; }
+.readme h4 { font-size: 0.9375rem; margin: 1.25rem 0 0.5rem; }
+.readme p { margin: 0 0 1rem; }
+.readme a { color: #0b5a4a; font-weight: 600; text-decoration: underline; text-decoration-color: rgb(11 90 74 / 0.3); text-underline-offset: 3px; }
+.readme a:hover { color: #f3843f; text-decoration-color: currentColor; }
+.readme strong { color: #1c1917; font-weight: 700; }
+.readme ul, .readme ol { margin: 0 0 1rem; padding-left: 1.375rem; }
+.readme ul { list-style: disc; }
+.readme ol { list-style: decimal; }
+.readme li { margin: 0.3rem 0; }
+.readme li > ul, .readme li > ol { margin: 0.3rem 0 0; }
+.readme ul.contains-task-list { list-style: none; padding-left: 0.25rem; }
+.readme input[type="checkbox"] { margin-right: 0.5rem; accent-color: #093c33; }
+.readme hr { border: 0; border-top: 1px solid #e7e5e4; margin: 2rem 0; }
+.readme img { display: inline-block; max-width: 100%; height: auto; vertical-align: middle; border-radius: 6px; }
+.readme [align="center"] { text-align: center; }
+.readme sub { font-size: 0.75rem; color: #78716c; }
+
+/* inline code + code blocks */
+.readme :not(pre) > code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8125em;
+  background: #f5f1ea;
+  border: 1px solid #e7e5e4;
+  border-radius: 6px;
+  padding: 0.1em 0.4em;
+  color: #7c2d12;
+}
+.readme-pre {
+  position: relative;
+  margin: 0 0 1.25rem;
+  padding: 1rem 1.125rem;
+  background: #0b2a23;
+  color: #e7f2ee;
+  border-radius: 14px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  tab-size: 2;
+}
+.readme-pre code { font-family: inherit; background: none; border: 0; padding: 0; color: inherit; white-space: pre; }
+.readme-pre[data-lang]::after {
+  content: attr(data-lang);
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(231 242 238 / 0.45);
+}
+
+/* tables scroll inside their own box, never the page */
+.readme-table-wrap { margin: 0 0 1.25rem; overflow-x: auto; border: 1px solid #e7e5e4; border-radius: 14px; }
+.readme table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.readme th, .readme td { padding: 0.625rem 0.875rem; text-align: left; vertical-align: top; border-bottom: 1px solid #e7e5e4; }
+.readme th { background: #fdfbf7; font-weight: 700; color: #1c1917; white-space: nowrap; }
+.readme tr:last-child > td { border-bottom: 0; }
+.readme td[align="center"], .readme th[align="center"] { text-align: center; }
+.readme td h3 { margin: 0 0 0.25rem; font-size: 1.5rem; }
+
+/* quotes + GitHub alerts */
+.readme blockquote {
+  margin: 0 0 1.25rem;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid #d6d3d1;
+  background: #faf7f2;
+  border-radius: 0 12px 12px 0;
+  color: #44403c;
+}
+.readme blockquote > :last-child { margin-bottom: 0; }
+.readme .readme-alert-title { margin: 0 0 0.25rem; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.readme .readme-alert-note { border-left-color: #2a8fca; background: #f0f7fc; }
+.readme .readme-alert-note .readme-alert-title { color: #1a6a9b; }
+.readme .readme-alert-tip { border-left-color: #157a63; background: #eef7f3; }
+.readme .readme-alert-tip .readme-alert-title { color: #0b5a4a; }
+.readme .readme-alert-important { border-left-color: #6a4fc4; background: #f4f1fc; }
+.readme .readme-alert-important .readme-alert-title { color: #4c35a0; }
+.readme .readme-alert-warning, .readme .readme-alert-caution { border-left-color: #e08a2e; background: #fdf4e7; }
+.readme .readme-alert-warning .readme-alert-title, .readme .readme-alert-caution .readme-alert-title { color: #9a5a10; }
+
+/* collapsible sections */
+.readme details { margin: 0 0 1rem; border: 1px solid #e7e5e4; border-radius: 12px; padding: 0.75rem 1rem; background: #fdfbf7; }
+.readme details > summary { cursor: pointer; font-weight: 600; color: #1c1917; }
+.readme details[open] > summary { margin-bottom: 0.75rem; }
+.readme details > :last-child { margin-bottom: 0; }
+
+/* mermaid diagrams */
+.readme-mermaid {
+  margin: 0 0 1.25rem;
+  padding: 1.25rem;
+  background: #fdfbf7;
+  border: 1px solid #e7e5e4;
+  border-radius: 14px;
+  overflow-x: auto;
+  text-align: center;
+}
+.readme-mermaid svg { max-width: 100%; height: auto; }

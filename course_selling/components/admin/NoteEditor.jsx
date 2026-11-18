@@ -9,7 +9,7 @@ import {
 import { useToast } from "@/components/ui/ToastProvider";
 import { api, ApiError, friendlyMessage, fieldErrors, formatBytes } from "@/lib/api";
 import { ACCENTS, ICONS, accentOf, CardIcon } from "@/lib/cardTheme";
-import { projectsList } from "@/data/projectsData";
+import { projectsList } from "@/data/legacyProjectsData";
 import { Card, Field, Input, Textarea, Select, Button, Badge, Toggle, Spinner, Alert, ConfirmDialog } from "./ui";
 
 const LEVELS = ["All Levels", "Beginner", "Intermediate", "Intermediate to Pro", "Advanced"];
