@@ -8,6 +8,7 @@ import { connectDB, disconnectDB } from '../db/connect.js';
 import { User } from '../models/User.js';
 import { Note } from '../models/Note.js';
 import { Upload } from '../models/Upload.js';
+import { HANDBOOK_NOTES, INSTRUCTOR } from '../data/starterNotes.js';
 import { registerUpload, discardUpload } from '../controllers/uploadController.js';
 import { uploadRoot } from '../storage/index.js';
 
@@ -27,7 +28,13 @@ import { uploadRoot } from '../storage/index.js';
 const DIST = path.resolve(process.cwd(), process.env.NOTES_PDF_DIR || '../notes-pdf/dist');
 
 async function publishOne(entry, owner, { force }) {
-  const note = await Note.findOne({ slug: entry.slug, deletedAt: null });
+  let note = await Note.findOne({ slug: entry.slug, deletedAt: null });
+  // Handbooks from the PDF Notes page are created on first publish.
+  const handbook = HANDBOOK_NOTES.find((n) => n.slug === entry.slug);
+  if (!note && handbook && !(await Note.exists({ slug: entry.slug }))) {
+    note = await Note.create({ ...handbook, instructor: INSTRUCTOR, visibility: 'PUBLIC', author: owner._id, publishedAt: new Date() });
+    logger.info(`${entry.slug}: created the note`);
+  }
   if (!note) {
     logger.warn(`${entry.slug}: no such note in the database, skipped (add the starter notes first)`);
     return 'missing';

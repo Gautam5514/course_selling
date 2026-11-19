@@ -133,7 +133,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .card-glow:hover::before {
   opacity: 1;
-  animation: spinBorder 2s linear infinite;
+  animation: spinBorder 5s linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

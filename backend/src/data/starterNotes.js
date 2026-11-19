@@ -7,7 +7,7 @@ import { Note } from '../models/Note.js';
  * Counters start at zero (they are real). The PDFs, page counts and chapters
  * come from `npm run publish:notes` (built in ../notes-pdf), or the admin panel.
  */
-const INSTRUCTOR = { name: 'Gautam Pandit', role: 'Instructor & Founder', company: 'Gopo Workspace', avatar: '' };
+export const INSTRUCTOR = { name: 'Gautam Pandit', role: 'Instructor & Founder', company: 'Gopo Workspace', avatar: '' };
 
 export const STARTER_NOTES = [
   {
@@ -62,14 +62,32 @@ export const STARTER_NOTES = [
 ];
 
 /**
- * Create the starter notes that do not exist yet (published + featured).
+ * Handbooks shown on the "PDF Notes" page (/pdf-notes). The slug is the card id
+ * there, so /pdf/<slug> opens the real PDF. Not featured: the home page keeps
+ * showing only the seven core notes above. Tagline, description, tags, pages
+ * and chapters are filled in by `npm run publish:notes` from the built PDFs.
+ */
+export const HANDBOOK_NOTES = [
+  { slug: 'nextjs16-react19-handbook', title: 'Next.js 16 & React 19 Architecture Handbook', category: 'Full Stack', order: 11, accent: 'emerald', icon: 'Layers', level: 'Intermediate to Pro', badge: 'Handbook' },
+  { slug: 'generative-ai-rag-systems-guide', title: 'Generative AI, RAG & Multi-Agent Systems Field Manual', category: 'AI/ML', order: 12, accent: 'purple', icon: 'Sparkles', level: 'Intermediate', badge: 'Field Manual' },
+  { slug: 'figma-tokens-design-systems-guide', title: 'Modern Design Systems: Figma Variables to React Code', category: 'UI/UX', order: 13, accent: 'rose', icon: 'BookOpen', level: 'Beginner to Intermediate', badge: 'Guide' },
+  { slug: 'kubernetes-docker-cloud-bible', title: 'Production Cloud & Kubernetes DevOps Playbook', category: 'DevOps & Cloud', order: 14, accent: 'sky', icon: 'Cloud', level: 'Intermediate to Advanced', badge: 'Playbook' },
+  { slug: 'system-design-interview-cheatsheet', title: 'High-Scale System Design & Architecture Cheatsheet', category: 'System Design', order: 15, accent: 'indigo', icon: 'Network', level: 'Intermediate to Advanced', badge: 'Cheatsheet' },
+  { slug: 'react-native-expo-production-handbook', title: 'Cross-Platform Mobile Pro: React Native & Expo Guide', category: 'Mobile', order: 16, accent: 'teal', icon: 'Smartphone', level: 'Beginner to Intermediate', badge: 'Handbook' },
+  { slug: 'dsa-patterns-mastery-sheet', title: 'DSA Mastery & Algorithm Patterns Cheatsheet', category: 'DSA', order: 17, accent: 'amber', icon: 'Code', level: 'All Levels', badge: 'Cheatsheet' },
+  { slug: 'backend-microservices-playbook', title: 'Production Backend & Microservices Architecture', category: 'Backend', order: 18, accent: 'indigo', icon: 'Server', level: 'Intermediate to Advanced', badge: 'Playbook' },
+].map((n) => ({ ...n, featured: false }));
+
+/**
+ * Create the starter notes and handbooks that do not exist yet (published;
+ * starter notes are featured on the home page, handbooks are not).
  * With `refresh`, existing ones also get their descriptive fields updated;
  * counters, uploaded PDFs, page counts and chapters are never touched.
  */
 export async function upsertStarterNotes({ ownerId, refresh = false }) {
   const created = [];
   const updated = [];
-  for (const n of STARTER_NOTES) {
+  for (const n of [...STARTER_NOTES, ...HANDBOOK_NOTES]) {
     const existing = await Note.findOne({ slug: n.slug });
     if (existing) {
       if (!refresh) continue;
@@ -79,7 +97,7 @@ export async function upsertStarterNotes({ ownerId, refresh = false }) {
       updated.push(n.slug);
       continue;
     }
-    await Note.create({ ...n, instructor: INSTRUCTOR, visibility: 'PUBLIC', featured: true, author: ownerId, publishedAt: new Date() });
+    await Note.create({ ...n, instructor: INSTRUCTOR, visibility: 'PUBLIC', featured: n.featured ?? true, author: ownerId, publishedAt: new Date() });
     created.push(n.slug);
   }
   return { created, updated };

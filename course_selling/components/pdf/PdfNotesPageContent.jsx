@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   FileText,
   Search,
@@ -17,6 +17,8 @@ import { useDebouncedValue } from "@/lib/useDebouncedValue";
 import LikeButton from "@/components/LikeButton";
 import { useRouter } from "next/navigation";
 import { useAuth, loginHref } from "@/components/AuthProvider";
+import { useToast } from "@/components/ui/ToastProvider";
+import { api, friendlyMessage } from "@/lib/api";
 
 export default function PdfNotesPageContent() {
   const [activeCategory, setActiveCategory] = useState("All Notes");
@@ -24,6 +26,33 @@ export default function PdfNotesPageContent() {
   const [sortBy, setSortBy] = useState("likes"); // "likes" | "pages" | "title"
   const router = useRouter();
   const { user } = useAuth();
+  const toast = useToast();
+
+  // Real likes / downloads / page counts from the backend, keyed by note slug
+  // (= card id). null = loading; a missing key = that note is not published.
+  const [stats, setStats] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .getNoteStats(pdfNotesList.map((p) => p.id))
+      .then(({ data }) => !cancelled && setStats(data))
+      .catch(() => !cancelled && setStats({}));
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
+  const statOf = (id) => (stats && stats[id]) || null;
+
+  const handleLike = async (pdf) => {
+    if (!user) return;
+    try {
+      const { data } = await api.likeNote(pdf.id);
+      setStats((prev) => ({ ...(prev ?? {}), [pdf.id]: data }));
+    } catch (err) {
+      toast.error(friendlyMessage(err, "We couldn't save your like. Please try again."));
+      throw err; // LikeButton reverts its optimistic state
+    }
+  };
 
   // Read Online → dedicated page; logged-out visitors sign in first and return.
   const openReader = (pdf) => {
@@ -43,51 +72,11 @@ export default function PdfNotesPageContent() {
         return matchesCategory && matchesSearch;
       })
       .sort((a, b) => {
-        if (sortBy === "likes") return (b.likes || 0) - (a.likes || 0);
+        if (sortBy === "likes") return (stats?.[b.id]?.likes || 0) - (stats?.[a.id]?.likes || 0);
         if (sortBy === "pages") return (b.pages || 0) - (a.pages || 0);
         return a.title.localeCompare(b.title);
       });
-  }, [activeCategory, debouncedQuery, sortBy]);
-
-  const handleInstantDownload = (pdf) => {
-    const docTitle = pdf.title || "Handbook";
-    const content = `================================================================================
-${docTitle.toUpperCase()}
-Author: ${pdf.author || "Gopo Workspace Engineering"}
-Category: ${pdf.category} | ${pdf.pages} Pages | ${pdf.fileSize}
-Platform: Gopo Workspace Open Education & Project Hub (100% Free)
-================================================================================
-
-OVERVIEW:
-${pdf.description}
-
-TABLE OF CONTENTS:
-${pdf.chapters
-  ?.map(
-    (c, i) =>
-      `[Chapter ${c.number || i + 1}] ${c.title}\n   Summary: ${c.summary}\n   Snippet: ${c.contentSnippet}\n`
-  )
-  .join("\n")}
-
-================================================================================
-KEY TAKEAWAYS & PRODUCTION CHECKLIST:
-- 100% Free Open Educational Resource.
-- Full project source code available at https://github.com/hellobject
-================================================================================
-`;
-
-    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    const safeFilename =
-      pdf.title.toLowerCase().replace(/[^a-z0-9]/g, "_") + "_notes.txt";
-    link.download = safeFilename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
+  }, [activeCategory, debouncedQuery, sortBy, stats]);
 
   return (
     <div className="py-12 sm:py-20">
@@ -172,8 +161,10 @@ KEY TAKEAWAYS & PRODUCTION CHECKLIST:
                   </span>
                   <div className="flex items-center gap-2">
                     <LikeButton
-                      id={`pdf_${pdf.id}`}
-                      initialLikes={pdf.likes || 180}
+                      likes={stats === null ? null : statOf(pdf.id)?.likes ?? null}
+                      liked={statOf(pdf.id)?.liked ?? false}
+                      onToggle={() => handleLike(pdf)}
+                      readOnly={!user}
                       variant="badge"
                     />
                   </div>
@@ -190,11 +181,11 @@ KEY TAKEAWAYS & PRODUCTION CHECKLIST:
                 {/* PDF Specs Badges */}
                 <div className="mt-4 flex items-center justify-between text-xs text-stone-500 pt-3 border-t border-stone-100">
                   <span className="font-semibold text-stone-800">
-                    📄 {pdf.pages} Pages
+                    📄 {statOf(pdf.id)?.pages ?? pdf.pages} Pages
                   </span>
                   <span className="text-stone-400">📦 {pdf.fileSize}</span>
                   <span className="text-emerald-700 font-medium">
-                    ⬇️ {pdf.downloads}
+                    ⬇️ {statOf(pdf.id) ? statOf(pdf.id).downloads.toLocaleString() : "–"}
                   </span>
                 </div>
 
@@ -222,7 +213,7 @@ KEY TAKEAWAYS & PRODUCTION CHECKLIST:
                 </button>
 
                 <button
-                  onClick={() => handleInstantDownload(pdf)}
+                  onClick={() => openReader(pdf)}
                   className="flex-1 py-2.5 rounded-xl text-xs font-bold text-white bg-[#093c33] hover:bg-[#072e27] shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-1.5 active:scale-95"
                 >
                   <Download className="w-3.5 h-3.5 text-[#f3843f]" />
