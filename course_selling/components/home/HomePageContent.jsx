@@ -8,18 +8,18 @@ import BecomeInstructor from "./BecomeInstructor";
 import Testimonials from "./Testimonials";
 import BlogInsights from "./BlogInsights";
 
-export default function HomePageContent() {
+export default function HomePageContent({ blogCards = [], featuredNotes = null, reviews = null }) {
   return (
     <>
       <Hero />
       <ThreeSteps />
-      <FeaturedCourses />
+      <FeaturedCourses initialNotes={featuredNotes} />
       <VirtualClassroom />
       <Benefits />
       <Partners />
       <BecomeInstructor />
-      <Testimonials />
-      <BlogInsights />
+      <Testimonials initialReviews={reviews} />
+      <BlogInsights posts={blogCards} />
     </>
   );
 }

@@ -6,10 +6,23 @@ import Link from "next/link";
 import { ArrowUpRight, Calendar, Clock, Sparkles, SlidersHorizontal, ArrowUpDown } from "lucide-react";
 import { LeftEdgeConcentricRings, StarburstDoodle } from "@/components/DecorativeShapes";
 import LikeButton from "@/components/LikeButton";
-import { techBlogPosts, blogSearchIndex } from "@/data/blogsData";
 import { useDebouncedValue } from "@/lib/useDebouncedValue";
 
-export default function BlogGrid({ activeCategory, searchQuery }) {
+export default function BlogGrid({ posts = [], activeCategory, searchQuery }) {
+  // slug -> { fields: lowercase search fields, minutes: parsed read time }, built once per list.
+  const blogSearchIndex = useMemo(
+    () =>
+      new Map(
+        posts.map((p) => [
+          p.slug,
+          {
+            fields: [p.title, p.subtitle, p.summary, ...(p.tags || [])].filter(Boolean).map((t) => t.toLowerCase()),
+            minutes: parseInt(p.readTime) || 10,
+          },
+        ])
+      ),
+    [posts]
+  );
   const [sortBy, setSortBy] = useState("latest"); // 'latest' | 'popular' | 'quick'
   const [selectedTag, setSelectedTag] = useState(null);
 
@@ -17,7 +30,7 @@ export default function BlogGrid({ activeCategory, searchQuery }) {
 
   const filtered = useMemo(() => {
     const query = debouncedQuery.trim().toLowerCase();
-    return techBlogPosts
+    return posts
     .filter((a) => {
       const matchesCat =
         activeCategory === "All Articles" ||
@@ -42,7 +55,7 @@ export default function BlogGrid({ activeCategory, searchQuery }) {
       // default: latest (preserve original curated order or date)
       return 0;
     });
-  }, [activeCategory, debouncedQuery, selectedTag, sortBy]);
+  }, [posts, blogSearchIndex, activeCategory, debouncedQuery, selectedTag, sortBy]);
 
   return (
     <section className="py-16 sm:py-20 bg-white relative overflow-hidden">

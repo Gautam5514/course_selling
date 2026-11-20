@@ -6,7 +6,7 @@ import BlogFeatured from "./BlogFeatured";
 import BlogGrid from "./BlogGrid";
 import BlogNewsletter from "./BlogNewsletter";
 
-export default function BlogPageContent() {
+export default function BlogPageContent({ posts = [] }) {
   const [activeCategory, setActiveCategory] = useState("All Topics");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -18,8 +18,9 @@ export default function BlogPageContent() {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
       />
-      <BlogFeatured />
+      <BlogFeatured posts={posts} />
       <BlogGrid
+        posts={posts}
         activeCategory={activeCategory}
         searchQuery={searchQuery}
       />

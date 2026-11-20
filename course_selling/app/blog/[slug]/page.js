@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BlogPostContent from "@/components/blog/BlogPostContent";
 import { techBlogPosts, postsBySlug } from "@/data/blogsData";
+import { relatedCards } from "@/data/blogCards";
 
 export async function generateStaticParams() {
   return techBlogPosts.map((post) => ({
@@ -50,7 +51,7 @@ export default async function BlogPostPage({ params }) {
     <div className="min-h-screen bg-[#faf7f2] font-sans antialiased text-[#0f2820] flex flex-col selection:bg-[#f3843f] selection:text-white">
       <Navbar />
       <main className="flex-1">
-        <BlogPostContent post={post} />
+        <BlogPostContent post={post} related={relatedCards(post)} />
       </main>
       <Footer />
     </div>

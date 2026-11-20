@@ -258,7 +258,6 @@ export default function VirtualClassroom() {
                             alt={p.name}
                             width={18}
                             height={18}
-                            unoptimized
                             className="rounded-full object-cover"
                           />
                           <span className="text-[11px] font-medium text-stone-700 truncate max-w-[90px]">
@@ -298,7 +297,6 @@ export default function VirtualClassroom() {
                         alt="Helen"
                         width={14}
                         height={14}
-                        unoptimized
                         className="rounded-full object-cover"
                       />
                       <span className="text-[10px] font-semibold text-stone-800">

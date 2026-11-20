@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BlogPageContent from "@/components/blog/BlogPageContent";
+import { blogCards } from "@/data/blogCards";
 
 export const metadata = {
   title: "Blog & Insights — Gopo Workspace | Engineering, Design & Career Guides",
@@ -13,7 +14,7 @@ export default function BlogPage() {
     <div className="min-h-screen bg-[#faf7f2] font-sans antialiased text-[#0f2820] flex flex-col selection:bg-[#f3843f] selection:text-white">
       <Navbar />
       <main className="flex-1">
-        <BlogPageContent />
+        <BlogPageContent posts={blogCards} />
       </main>
       <Footer />
     </div>

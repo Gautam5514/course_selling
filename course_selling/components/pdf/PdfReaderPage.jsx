@@ -94,7 +94,8 @@ function FullScreen({ children }) {
  */
 export default function PdfReaderPage({ id }) {
   const router = useRouter();
-  const { user, loading, logout } = useAuth();
+  const { user, loading: authLoading, ready, logout } = useAuth();
+  const loading = authLoading || !ready; // wait for the saved session so the note is fetched once, as the right person
   const toast = useToast();
   const path = `/pdf/${id}`;
 
@@ -122,10 +123,8 @@ export default function PdfReaderPage({ id }) {
     if (loading) return undefined;
     let cancelled = false;
     const member = Boolean(userId);
-    api
-      .getNote(id)
-      .then(({ data }) => !cancelled && setDoc(fromNote(data, member)))
-      .catch((err) => {
+    const show = ({ data }) => !cancelled && setDoc(fromNote(data, member));
+    const fail = (err) => {
         if (cancelled) return;
         const pdf = pdfById.get(id);
         if (pdf) {
@@ -134,7 +133,10 @@ export default function PdfReaderPage({ id }) {
         }
         setDoc(null);
         if (!(err instanceof ApiError && err.status === 404)) setLoadError(friendlyMessage(err, "We couldn't load this note right now."));
-      });
+    };
+    // A note opened before paints instantly from the saved copy; the live
+    // version replaces it as soon as the API answers.
+    api.getNoteCached(id, { onFresh: show, onGone: fail }).then(show).catch(fail);
     return () => {
       cancelled = true;
     };

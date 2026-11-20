@@ -108,15 +108,16 @@ function fromReview(r) {
   };
 }
 
-export default function Testimonials() {
-  const [reviews, setReviews] = useState(null);
+/** `initialReviews`: reviews fetched on the server (null when the API was unreachable). */
+export default function Testimonials({ initialReviews = null }) {
+  const [reviews, setReviews] = useState(() => (initialReviews ? initialReviews.map(fromReview) : null));
 
   useEffect(() => {
     let active = true;
     api
       .getLatestReviews(9)
       .then(({ data }) => active && setReviews(data.map(fromReview)))
-      .catch(() => active && setReviews([]));
+      .catch(() => active && setReviews((prev) => prev ?? []));
     return () => {
       active = false;
     };

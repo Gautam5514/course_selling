@@ -6,7 +6,6 @@ import Link from "next/link";
 import { ArrowUpRight, Calendar, Clock, Sparkles, BookOpen, Layers } from "lucide-react";
 import { LeftEdgeConcentricRings, StarburstDoodle } from "@/components/DecorativeShapes";
 import LikeButton from "@/components/LikeButton";
-import { techBlogPosts } from "@/data/blogsData";
 
 const HOME_CATEGORIES = [
   { label: "All Blueprints", filter: "all" },
@@ -18,10 +17,11 @@ const HOME_CATEGORIES = [
 
 const HOME_CATEGORIES_BY_LABEL = new Map(HOME_CATEGORIES.map((c) => [c.label, c]));
 
-export default function BlogInsights() {
+/** `posts`: light blog cards built on the server (see data/blogCards.js). */
+export default function BlogInsights({ posts = [] }) {
   const [activeTab, setActiveTab] = useState("all");
 
-  const filteredPosts = techBlogPosts.filter((post) => {
+  const filteredPosts = posts.filter((post) => {
     if (activeTab === "all") return true;
     const tabObj = HOME_CATEGORIES_BY_LABEL.get(activeTab);
     if (!tabObj || tabObj.filter === "all") return true;
@@ -69,7 +69,7 @@ export default function BlogInsights() {
             href="/blog"
             className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white border border-stone-200/90 text-xs sm:text-sm font-bold text-[#0b382d] hover:bg-[#0b382d] hover:text-white hover:border-[#0b382d] shadow-sm transition-all duration-300 self-start md:self-end group"
           >
-            <span>View All {techBlogPosts.length} Handbooks</span>
+            <span>View All {posts.length} Handbooks</span>
             <div className="w-6 h-6 rounded-full bg-[#f3843f] text-white flex items-center justify-center shadow-xs group-hover:scale-110 group-hover:bg-white group-hover:text-[#0b382d] transition-all">
               <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
             </div>

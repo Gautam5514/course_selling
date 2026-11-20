@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -22,9 +22,8 @@ import {
   FolderGit2,
 } from "lucide-react";
 import LikeButton from "@/components/LikeButton";
-import { techBlogPosts } from "@/data/blogsData";
 
-export default function BlogPostContent({ post }) {
+export default function BlogPostContent({ post, related = [] }) {
   const [copiedCodeId, setCopiedCodeId] = useState(null);
   const [copiedLink, setCopiedLink] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState("");
@@ -64,17 +63,8 @@ export default function BlogPostContent({ post }) {
   }, [post]);
 
   // Other posts for the "Related Deep Dives" section (same category first)
-  const relatedPosts = useMemo(() => {
-    if (!post) return [];
-    return techBlogPosts
-      .filter((p) => p.slug !== post.slug)
-      .sort((a, b) => {
-        const sameCatA = a.category === post.category ? 1 : 0;
-        const sameCatB = b.category === post.category ? 1 : 0;
-        return sameCatB - sameCatA;
-      })
-      .slice(0, 3);
-  }, [post]);
+  // (picked on the server so the other articles never ship to the browser)
+  const relatedPosts = related;
 
   const copyCode = (codeText, id) => {
     navigator.clipboard.writeText(codeText);

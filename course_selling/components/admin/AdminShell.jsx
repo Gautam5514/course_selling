@@ -24,7 +24,8 @@ const NAV = [
  *  - ADMIN / EDITOR     → sidebar shell
  */
 export default function AdminShell({ children }) {
-  const { user, loading, logout, backendReachable } = useAuth();
+  const { user, loading: authLoading, ready, logout, backendReachable } = useAuth();
+  const loading = authLoading || !ready; // wait for the saved session before deciding
   const pathname = usePathname();
   const router = useRouter();
   const toast = useToast();

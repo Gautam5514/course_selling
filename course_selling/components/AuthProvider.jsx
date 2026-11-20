@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError, hasSessionToken } from "@/lib/api";
 
 const AuthContext = createContext(null);
 
@@ -31,7 +31,12 @@ export function AuthProvider({ children }) {
   // Login button is always visible), hydrate from the cached user right after
   // mount, then confirm with /api/auth/me in the background.
   const [user, setUserState] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
+  // `ready` flips to true once we know who is (probably) asking: right after
+  // the saved session is read, or, when there is a token but no saved user,
+  // after the first session check. Guards (members-only pages) must wait for
+  // it, otherwise a signed-in member is bounced through /login on every load.
+  const [ready, setReady] = useState(false);
   // false when the last session check could not reach the backend at all.
   const [backendReachable, setBackendReachable] = useState(true);
 
@@ -62,8 +67,11 @@ export function AuthProvider({ children }) {
     const cached = readCachedUser();
     (async () => {
       if (cached && active) setUserState(cached);
+      const mustConfirm = !cached && hasSessionToken();
+      if (!mustConfirm && active) setReady(true);
       for (let attempt = 0; attempt < 4 && active; attempt++) {
         const r = await refresh();
+        if (active) setReady(true);
         if (r !== "retry") break;
         await new Promise((res) => setTimeout(res, 1500 * 2 ** attempt));
       }
@@ -106,8 +114,8 @@ export function AuthProvider({ children }) {
   }, [setUser]);
 
   const value = useMemo(
-    () => ({ user, loading, backendReachable, isAuthenticated: Boolean(user), login, register, loginWithGoogle, logout, refresh }),
-    [user, loading, backendReachable, login, register, loginWithGoogle, logout, refresh]
+    () => ({ user, loading, ready, backendReachable, isAuthenticated: Boolean(user), login, register, loginWithGoogle, logout, refresh }),
+    [user, loading, ready, backendReachable, login, register, loginWithGoogle, logout, refresh]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

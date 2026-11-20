@@ -79,7 +79,8 @@ function SkeletonCard() {
   );
 }
 
-export default function FeaturedCourses() {
+/** `initialNotes`: featured notes fetched on the server (null when the API was unreachable). */
+export default function FeaturedCourses({ initialNotes = null }) {
   const router = useRouter();
   const { user } = useAuth();
   const toast = useToast();
@@ -89,37 +90,48 @@ export default function FeaturedCourses() {
 
   // Cards come from the backend (managed in the admin panel). If the backend
   // cannot be reached we fall back to the built-in cards with "–" stats.
-  const [cards, setCards] = useState(null); // null = loading
+  const [cards, setCards] = useState(() => (initialNotes ? initialNotes.map(fromNote) : null)); // null = loading
   const [stats, setStats] = useState(null); // keyed by note slug; null = loading
   const [statsError, setStatsError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
+    let statsFor = ""; // slugs the current stats request covers
+    const loadStats = (list) => {
+      const key = list.map((c) => c.id).sort().join(",");
+      if (key === statsFor) return;
+      statsFor = key;
+      if (!list.length) {
+        setStats({});
+        return;
+      }
+      api
+        .getNoteStats(list.map((c) => c.id))
+        .then((res) => {
+          if (cancelled || statsFor !== key) return;
+          setStats(res.data);
+          setStatsError(false);
+        })
+        .catch(() => {
+          if (cancelled || statsFor !== key) return;
+          setStats({});
+          setStatsError(true);
+        });
+    };
+    // Cards already rendered by the server: ask for their stats right away,
+    // in parallel with the list refresh, instead of one request after another.
+    const serverCards = initialNotes ? initialNotes.map(fromNote) : null;
+    if (serverCards) loadStats(serverCards);
     api
       .listNotes({ featured: true })
       .then(({ data }) => {
         if (cancelled) return;
         const list = data.map(fromNote);
         setCards(list);
-        if (!list.length) {
-          setStats({});
-          return;
-        }
-        api
-          .getNoteStats(list.map((c) => c.id))
-          .then((res) => {
-            if (cancelled) return;
-            setStats(res.data);
-            setStatsError(false);
-          })
-          .catch(() => {
-            if (cancelled) return;
-            setStats({});
-            setStatsError(true);
-          });
+        loadStats(list);
       })
       .catch(() => {
-        if (cancelled) return;
+        if (cancelled || serverCards) return; // keep what the server rendered
         setCards(popularCourses.map(fromStatic));
         setStats({});
         setStatsError(true);
@@ -127,6 +139,8 @@ export default function FeaturedCourses() {
     return () => {
       cancelled = true;
     };
+    // initialNotes comes from the server render and never changes afterwards.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const categories = useMemo(() => {

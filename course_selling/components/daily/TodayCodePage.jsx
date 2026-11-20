@@ -32,7 +32,8 @@ function Chip({ className = "", children }) {
  */
 export default function TodayCodePage({ date }) {
   const router = useRouter();
-  const { user, loading, backendReachable } = useAuth();
+  const { user, loading: authLoading, ready, backendReachable } = useAuth();
+  const loading = authLoading || !ready; // wait for the saved session before deciding
   const path = date ? `/today-code/${date}` : "/today-code";
 
   // Keyed by the requested date so switching days shows the skeleton again
@@ -53,17 +54,23 @@ export default function TodayCodePage({ date }) {
   useEffect(() => {
     if (loading || !user) return undefined;
     let active = true;
-    (date ? api.dailyCode.get(date) : api.dailyCode.today())
-      .then((res) => {
-        if (!active) return;
-        setSolutionIndex(0);
-        setFetched({ for: want, result: res });
-      })
-      .catch((err) => {
-        if (!active) return;
-        const notFound = err instanceof ApiError && err.status === 404;
-        setFetched({ for: want, error: { notFound, message: notFound ? err.message : friendlyMessage(err, "We couldn't load today's code right now.") } });
-      });
+    let shownId; // entry currently on screen for this request
+    const show = (res) => {
+      if (!active) return;
+      // Same entry refreshed in the background: keep the reader's selected tab.
+      const nextId = res?.data?.id ?? null;
+      if (shownId !== nextId) setSolutionIndex(0);
+      shownId = nextId;
+      setFetched({ for: want, result: res });
+    };
+    const fail = (err) => {
+      if (!active) return;
+      const notFound = err instanceof ApiError && err.status === 404;
+      setFetched({ for: want, error: { notFound, message: notFound ? err.message : friendlyMessage(err, "We couldn't load today's code right now.") } });
+    };
+    // Saved copy paints instantly; the live answer replaces it when it arrives.
+    const opts = { onFresh: show, onGone: fail };
+    (date ? api.dailyCode.get(date, opts) : api.dailyCode.today(opts)).then(show).catch(fail);
     return () => {
       active = false;
     };
@@ -74,7 +81,7 @@ export default function TodayCodePage({ date }) {
     if (loading || !user) return undefined;
     let active = true;
     api.dailyCode
-      .list({ limit: 30 })
+      .list({ limit: 30 }, { onFresh: (res) => active && setArchive(res.data) })
       .then((res) => active && setArchive(res.data))
       .catch(() => active && setArchive([]));
     return () => {

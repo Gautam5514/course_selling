@@ -1,7 +1,7 @@
 "use client";
 
 import { SparkleStar, DoodleUnderline } from "@/components/DecorativeShapes";
-import { blogCategories } from "@/data/blogsData";
+import { blogCategories } from "@/data/blogCategories";
 import { Search, X, Sparkles, BookOpen, Cpu, ShieldCheck } from "lucide-react";
 
 const TRENDING_TAGS = [

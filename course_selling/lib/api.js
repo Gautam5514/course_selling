@@ -213,6 +213,12 @@ async function request(path, { method = "GET", body, headers, signal, cache, nex
     const code = err.code || (res.status === 429 ? "RATE_LIMITED" : res.status >= 500 ? "INTERNAL" : "HTTP_ERROR");
     throw new ApiError(res.status, code, err.message || FRIENDLY_BY_CODE[code] || GENERIC, err.details);
   }
+  // Any admin change may alter what readers see: drop the saved reader copies.
+  if (method !== "GET" && path.startsWith("/api/admin/") && typeof window !== "undefined") {
+    invalidateReads("note:");
+    invalidateReads("notes:");
+    invalidateReads("daily:");
+  }
   return payload; // { data, meta? }
 }
 
@@ -269,16 +275,92 @@ function upload(path, file, { onProgress, fieldName = "file", timeoutMs = 10 * 6
 const readStore = new Map(); // key -> { value, at }
 const readInflight = new Map(); // key -> Promise
 
-function cachedGet(key, fetcher, { ttl = 30_000, swr = 300_000 } = {}) {
+//
+// `persist: true` also keeps the last good answer in localStorage, so a page
+// opened again (even days later, even while the API is still waking up) paints
+// instantly from the saved copy. The caller passes `onFresh` to receive the
+// live answer when it lands and `onGone` if the saved copy turns out to be no
+// longer valid (deleted / access removed), so stale data never sticks.
+const PERSIST_PREFIX = "rc1:";
+const PERSIST_MAX_ENTRIES = 16;
+const PERSIST_MAX_CHARS = 300_000; // skip unusually large payloads
+
+function persistRead(key) {
+  try {
+    const raw = window.localStorage.getItem(PERSIST_PREFIX + key);
+    if (!raw) return null;
+    const hit = JSON.parse(raw);
+    return hit && typeof hit.at === "number" && "value" in hit ? hit : null;
+  } catch {
+    return null;
+  }
+}
+
+function persistKeys() {
+  const keys = [];
+  try {
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const k = window.localStorage.key(i);
+      if (k && k.startsWith(PERSIST_PREFIX)) keys.push(k);
+    }
+  } catch {
+    /* storage blocked */
+  }
+  return keys;
+}
+
+function persistWrite(key, entry) {
+  try {
+    const raw = JSON.stringify(entry);
+    if (raw.length > PERSIST_MAX_CHARS) return;
+    const ls = window.localStorage;
+    ls.setItem(PERSIST_PREFIX + key, raw);
+    // Bounded: evict the oldest entries beyond the cap (least recently written).
+    const keys = persistKeys();
+    if (keys.length > PERSIST_MAX_ENTRIES) {
+      keys
+        .map((k) => {
+          let at = 0;
+          try {
+            at = JSON.parse(ls.getItem(k))?.at ?? 0;
+          } catch {
+            /* corrupt entry: evict first */
+          }
+          return [k, at];
+        })
+        .sort((a, b) => a[1] - b[1])
+        .slice(0, keys.length - PERSIST_MAX_ENTRIES)
+        .forEach(([k]) => ls.removeItem(k));
+    }
+  } catch {
+    /* quota exceeded or storage blocked: memory cache still works */
+  }
+}
+
+function persistRemove(match) {
+  try {
+    for (const k of persistKeys()) if (match(k.slice(PERSIST_PREFIX.length))) window.localStorage.removeItem(k);
+  } catch {
+    /* storage blocked */
+  }
+}
+
+function cachedGet(key, fetcher, { ttl = 30_000, swr = 300_000, persist = false, onFresh, onGone } = {}) {
   if (typeof window === "undefined") return fetcher();
-  const hit = readStore.get(key);
+  let hit = readStore.get(key);
+  if (!hit && persist) {
+    hit = persistRead(key);
+    if (hit) readStore.set(key, hit);
+  }
   const age = hit ? Date.now() - hit.at : Infinity;
   const refresh = () => {
     let p = readInflight.get(key);
     if (!p) {
       p = fetcher()
         .then((v) => {
-          readStore.set(key, { value: v, at: Date.now() });
+          const entry = { value: v, at: Date.now() };
+          readStore.set(key, entry);
+          if (persist) persistWrite(key, entry);
           return v;
         })
         .finally(() => readInflight.delete(key));
@@ -288,7 +370,17 @@ function cachedGet(key, fetcher, { ttl = 30_000, swr = 300_000 } = {}) {
   };
   if (age < ttl) return Promise.resolve(hit.value);
   if (age < swr) {
-    refresh().catch(() => {});
+    refresh().then(
+      (v) => onFresh?.(v),
+      (err) => {
+        // The saved copy is wrong (not just unreachable): drop it and tell the caller.
+        if (err instanceof ApiError && [401, 403, 404, 410].includes(err.status)) {
+          readStore.delete(key);
+          if (persist) persistRemove((k) => k === key);
+          onGone?.(err);
+        }
+      }
+    );
     return Promise.resolve(hit.value);
   }
   return refresh();
@@ -296,6 +388,24 @@ function cachedGet(key, fetcher, { ttl = 30_000, swr = 300_000 } = {}) {
 
 function invalidateReads(prefix) {
   for (const k of readStore.keys()) if (k.startsWith(prefix)) readStore.delete(k);
+  if (typeof window !== "undefined") persistRemove((k) => k.startsWith(prefix));
+}
+
+/** Forget every cached read (called whenever the signed-in identity changes). */
+function clearReads() {
+  readStore.clear();
+  if (typeof window !== "undefined") persistRemove(() => true);
+}
+
+/** True when this browser holds a session token (a session check is worth waiting for). */
+export function hasSessionToken() {
+  return Boolean(getToken());
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+function localDayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 // Per-visitor/user entries must never leak between identities.
@@ -336,6 +446,22 @@ export const api = {
   /** Fetch one published note by slug (includes videoUrl + blocks + download urls). */
   getNote(slug, opts = {}) {
     return request(`/api/public/notes/${encodeURIComponent(slug)}`, opts);
+  },
+
+  /**
+   * Reader variant of getNote: answers instantly from the saved copy when one
+   * exists, then delivers the live note through `onFresh` (or `onGone` if it
+   * was unpublished). Saved copies are per identity and wiped on login/logout.
+   */
+  getNoteCached(slug, { onFresh, onGone } = {}) {
+    const path = `/api/public/notes/${encodeURIComponent(slug)}`;
+    return cachedGet(`note:${identity()}:${slug}`, () => request(path, { cache: "no-store" }), {
+      ttl: 20_000,
+      swr: 7 * DAY_MS,
+      persist: true,
+      onFresh,
+      onGone,
+    });
   },
 
   /** Fetch a public space by slug. */
@@ -396,8 +522,8 @@ export const api = {
   },
 
   /** Latest written reviews across all notes (home page testimonials). Public. */
-  getLatestReviews(limit = 9) {
-    return request(`/api/public/notes/reviews?limit=${limit}`, { next: { revalidate: 120 }, timeoutMs: 12000 });
+  getLatestReviews(limit = 9, opts = {}) {
+    return request(`/api/public/notes/reviews?limit=${limit}`, { next: { revalidate: 120 }, timeoutMs: 12000, ...opts });
   },
 
   // ─── Auth (students + admins share the same cookie session) ─────────────
@@ -408,17 +534,20 @@ export const api = {
   async login(email, password) {
     const res = await request("/api/auth/login", { method: "POST", body: { email, password } });
     setToken(res?.data?.token);
+    clearReads();
     return res;
   },
   async register(name, email, password) {
     const res = await request("/api/auth/register", { method: "POST", body: { name, email, password } });
     setToken(res?.data?.token);
+    clearReads();
     return res;
   },
   /** Google sign-in / sign-up with a Firebase ID token. */
   async googleLogin(idToken) {
     const res = await request("/api/auth/google", { method: "POST", body: { idToken } });
     setToken(res?.data?.token);
+    clearReads();
     return res;
   },
   async logout() {
@@ -426,22 +555,39 @@ export const api = {
       return await request("/api/auth/logout", { method: "POST" });
     } finally {
       setToken(null);
+      clearReads();
     }
   },
 
   // ─── Today Code (problem of the day) ─────────────────────────────────────
   dailyCode: {
     /** Archive of past days (dates + titles). Public. */
-    list(params = {}) {
-      return request(`/api/public/daily-code${qs(params)}`, { cache: "no-store" });
+    list(params = {}, { onFresh } = {}) {
+      const path = `/api/public/daily-code${qs(params)}`;
+      return cachedGet(`daily:list:${path}`, () => request(path, { cache: "no-store" }), { ttl: 60_000, swr: DAY_MS, persist: true, onFresh });
     },
-    /** Latest live entry on or before today. Members only. */
-    today() {
-      return request("/api/public/daily-code/today", { cache: "no-store" });
+    /**
+     * Latest live entry on or before today. Members only. Keyed by the local
+     * calendar day, so yesterday's saved answer is never shown as today's.
+     */
+    today({ onFresh, onGone } = {}) {
+      return cachedGet(`daily:${identity()}:today:${localDayKey()}`, () => request("/api/public/daily-code/today", { cache: "no-store" }), {
+        ttl: 60_000,
+        swr: DAY_MS,
+        persist: true,
+        onFresh,
+        onGone,
+      });
     },
     /** One day (YYYY-MM-DD). Members only. */
-    get(date) {
-      return request(`/api/public/daily-code/${encodeURIComponent(date)}`, { cache: "no-store" });
+    get(date, { onFresh, onGone } = {}) {
+      return cachedGet(`daily:${identity()}:day:${date}`, () => request(`/api/public/daily-code/${encodeURIComponent(date)}`, { cache: "no-store" }), {
+        ttl: 60_000,
+        swr: 7 * DAY_MS,
+        persist: true,
+        onFresh,
+        onGone,
+      });
     },
   },
 

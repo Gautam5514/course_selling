@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Calendar, Clock, Sparkles, ChevronRight } from "lucide-react";
 import LikeButton from "@/components/LikeButton";
-import { techBlogPosts, postsBySlug } from "@/data/blogsData";
 
 // Selected premier featured handbooks
 const FEATURED_SLUGS = [
@@ -15,11 +14,12 @@ const FEATURED_SLUGS = [
   "nextjs-16-react-19-architecture-guide",
 ];
 
-export default function BlogFeatured() {
+export default function BlogFeatured({ posts = [] }) {
+  const postsBySlug = useMemo(() => new Map(posts.map((p) => [p.slug, p])), [posts]);
   const [selectedSlug, setSelectedSlug] = useState(FEATURED_SLUGS[0]);
 
   const featured =
-    postsBySlug.get(selectedSlug) || techBlogPosts[0];
+    postsBySlug.get(selectedSlug) || posts[0];
 
   if (!featured) return null;
 
